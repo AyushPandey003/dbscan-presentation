@@ -447,6 +447,7 @@ cluster_labels = clusterer.fit_predict(data)
             <p class="section-subtitle">
               Determining if clusters exist in data
             </p>
+            <img src="clustering.png" alt="Clustering visualization" style="max-width: 60%; height: auto; margin-top: 20px; cursor: pointer;" class="zoomable-image">
           </section>
 
           <section>
@@ -509,8 +510,9 @@ def hopkins_statistic(X, sample_size=None):
         <!-- Slides 18-20: Quality Metrics Analysis -->
         <section>
           <section class="section-title">
-            <h1>Quality Metrics Analysis</h1>
-            <p class="section-subtitle">Evaluating clustering performance</p>
+          <h1>Quality Metrics Analysis</h1>
+          <p class="section-subtitle">Evaluating clustering performance</p>
+          <img src="p12.webp" alt="Quality Metrics Visual" style="max-width: 60%; height: auto; margin-top: 20px; cursor: pointer;" class="zoomable-image" />
           </section>
 
           <section>
@@ -564,100 +566,177 @@ def hopkins_statistic(X, sample_size=None):
         <!-- Slides 21-23: Case Study & Code Examples -->
         <section>
           <section class="section-title">
-            <h1>Case Study & Code Examples</h1>
+            <h1>DBSCAN in Action: Case Studies and Code Examples</h1>
             <p class="section-subtitle">
-              Practical implementation and applications
+              This presentation explores the practical applications of the Density-Based Spatial Clustering of Applications with Noise (DBSCAN) algorithm. We will delve into real-world case studies showcasing its effectiveness in various domains and provide hands-on code examples with visualizations to solidify your understanding.
             </p>
           </section>
 
           <section>
-            <h2>Customer Segmentation Example</h2>
-            <div class="code-example">
-              <pre><code class="python">
+            <h2>Case Studies: Uncovering Patterns in Diverse Datasets</h2>
+            <p>DBSCAN's ability to find arbitrarily shaped clusters and identify noise makes it a valuable tool in many fields:</p>
+            <div class="case-studies-grid">
+              <div class="case-study fragment">
+                <h3>1. Anomaly Detection in Scientific Data</h3>
+                <p><strong>Scenario:</strong> Identifying unusual data points in scientific datasets.</p>
+                <p><strong>Application:</strong> Wine quality analysis, temperature anomaly detection.</p>
+                <img src="dbscan_wine_anomaly.png" alt="Wine Anomaly Detection - DBSCAN identifies unusual wines as outliers based on chemical properties" style="max-width: 100%; height: auto; margin-top: 10px; border-radius: 8px; cursor: pointer;" class="zoomable-image" />
+              </div>
+              <div class="case-study fragment">
+                <h3>2. Customer Segmentation in Retail</h3>
+                <p><strong>Scenario:</strong> Understanding customer base for targeted marketing.</p>
+                <p><strong>Application:</strong> Organic customer segments without predefined groups.</p>
+                <img src="dbscan_customer_segmentation.png" alt="Customer Segmentation - DBSCAN reveals natural customer groups based on purchasing behavior" style="max-width: 100%; height: auto; margin-top: 10px; border-radius: 8px; cursor: pointer;" class="zoomable-image" />
+              </div>
+              <div class="case-study fragment">
+                <h3>3. Fraud Detection in Financial Transactions</h3>
+                <p><strong>Scenario:</strong> Identifying fraudulent financial activities.</p>
+                <p><strong>Application:</strong> Isolating fraudulent transactions as noise points.</p>
+                <img src="dbscan_anomaly_detection.png" alt="Fraud Detection - DBSCAN flags unusual transaction patterns as potential fraud" style="max-width: 100%; height: auto; margin-top: 10px; border-radius: 8px; cursor: pointer;" class="zoomable-image" />
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2>Code Examples: Implementing DBSCAN with Python</h2>
+            <p>DBSCAN can be easily implemented using Python's scikit-learn library. Here are examples with visualizations to illustrate the core concepts.</p>
+            
+            <h3>1. Basic DBSCAN Clustering</h3>
+            <div style="display: flex; gap: 2rem; align-items: flex-start;">
+              <div style="flex: 1;">
+                <div class="code-example">
+                  <pre><code class="python">
 import numpy as np
-from sklearn.cluster import DBSCAN
-from sklearn.preprocessing import StandardScaler
-from sklearn.metrics import silhouette_score
-
-# Load and preprocess data
-data = load_customer_data()
-scaler = StandardScaler()
-X_scaled = scaler.fit_transform(data)
-
-# Apply DBSCAN
-dbscan = DBSCAN(eps=0.5, min_samples=5)
-labels = dbscan.fit_predict(X_scaled)
-
-# Evaluate clustering
-n_clusters = len(set(labels)) - (1 if -1 in labels else 0)
-n_noise = list(labels).count(-1)
-
-print(f'Estimated number of clusters: {n_clusters}')
-print(f'Estimated number of noise points: {n_noise}')
-
-if n_clusters > 1:
-    silhouette_avg = silhouette_score(X_scaled, labels)
-    print(f'Average silhouette score: {silhouette_avg:.3f}')
-                        </code></pre>
-            </div>
-          </section>
-
-          <section>
-            <h2>Parameter Optimization</h2>
-            <div class="code-example">
-              <pre><code class="python">
-from sklearn.neighbors import NearestNeighbors
 import matplotlib.pyplot as plt
+from sklearn.cluster import DBSCAN
+from sklearn.datasets import make_moons
 
-def find_optimal_eps(X, min_samples):
-    """Find optimal epsilon using k-distance graph"""
-    nbrs = NearestNeighbors(n_neighbors=min_samples).fit(X)
-    distances, indices = nbrs.kneighbors(X)
-    
-    # Sort distances to min_samples-th nearest neighbor
-    distances = np.sort(distances[:, min_samples-1], axis=0)
-    
-    # Plot k-distance graph
-    plt.figure(figsize=(10, 6))
-    plt.plot(distances)
-    plt.title('K-Distance Graph')
-    plt.xlabel('Points sorted by distance')
-    plt.ylabel(f'{min_samples}-NN distance')
-    plt.grid(True)
-    
-    # Find elbow point (optimal eps)
-    # Use knee detection algorithm
-    from kneed import KneeLocator
-    kneedle = KneeLocator(range(len(distances)), distances, 
-                         curve='convex', direction='increasing')
-    
-    return distances[kneedle.knee] if kneedle.knee else distances[len(distances)//4]
+# Generate sample data
+X, _ = make_moons(n_samples=200, noise=0.05, random_state=42)
 
-# Usage
-optimal_eps = find_optimal_eps(X_scaled, min_samples=5)
-print(f'Optimal eps: {optimal_eps:.3f}')
-                        </code></pre>
+# Perform DBSCAN clustering
+dbscan = DBSCAN(eps=0.3, min_samples=5)
+clusters = dbscan.fit_predict(X)
+
+# Visualize the results
+plt.figure(figsize=(10, 6))
+scatter = plt.scatter(X[:, 0], X[:, 1], c=clusters, cmap='viridis')
+plt.title("DBSCAN Clustering of Moons Dataset")
+plt.xlabel("Feature 1")
+plt.ylabel("Feature 2")
+plt.legend(handles=scatter.legend_elements()[0], 
+          labels=['Cluster 1', 'Cluster 2', 'Noise'])
+plt.savefig('dbscan_moons_clustering.png')
+plt.show()
+                  </code></pre>
+                </div>
+              </div>
+              <div style="flex: 1;">
+                <img src="dbscan_moons_clustering.png" alt="DBSCAN Moons Clustering Result - Successfully identifies two non-linear clusters" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); cursor: pointer;" class="zoomable-image" />
+                <p style="font-size: 0.9em; margin-top: 10px; color: #ccc;">
+                  <strong>Result:</strong> DBSCAN successfully identifies two non-linear clusters in the moons dataset, demonstrating its ability to find arbitrarily shaped clusters.
+                </p>
+              </div>
             </div>
           </section>
 
           <section>
-            <h2>Real-world Applications</h2>
-            <div class="applications-grid">
-              <div class="app-box fragment">
-                <h3>Anomaly Detection</h3>
-                <p>Identifying outliers in network traffic, fraud detection</p>
+            <h2>2. Anomaly Detection with DBSCAN</h2>
+            <p>This example shows how DBSCAN can be used to identify outliers in a dataset.</p>
+            <div style="display: flex; gap: 2rem; align-items: flex-start;">
+              <div style="flex: 1;">
+                <div class="code-example">
+                  <pre><code class="python">
+import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.cluster import DBSCAN
+from sklearn.datasets import make_blobs
+
+# Generate sample data with outliers
+centers = [[1, 1], [-1, -1]]
+X, _ = make_blobs(n_samples=750, centers=centers, 
+                  cluster_std=0.4, random_state=0)
+outliers = np.random.uniform(low=-3, high=3, size=(50, 2))
+X = np.vstack([X, outliers])
+
+# Perform DBSCAN clustering
+dbscan = DBSCAN(eps=0.3, min_samples=10)
+clusters = dbscan.fit_predict(X)
+
+# Visualize the results
+plt.figure(figsize=(10, 6))
+# Plot non-outlier points
+plt.scatter(X[clusters != -1, 0], X[clusters != -1, 1], 
+           c=clusters[clusters != -1], cmap='viridis', label='Clusters')
+# Plot outlier points
+plt.scatter(X[clusters == -1, 0], X[clusters == -1, 1], 
+           c='red', marker='x', label='Outliers')
+plt.title("DBSCAN Anomaly Detection")
+plt.xlabel("Feature 1")
+plt.ylabel("Feature 2")
+plt.legend()
+plt.savefig('dbscan_anomaly_detection.png')
+plt.show()
+
+# Print results
+n_clusters_ = len(set(clusters)) - (1 if -1 in clusters else 0)
+n_noise_ = list(clusters).count(-1)
+print(f'Estimated number of clusters: {n_clusters_}')
+print(f'Estimated number of noise points: {n_noise_}')
+                  </code></pre>
+                </div>
               </div>
-              <div class="app-box fragment">
-                <h3>Image Segmentation</h3>
-                <p>Grouping pixels based on color and spatial proximity</p>
+              <div style="flex: 1;">
+                <img src="dbscan_anomaly_detection.png" alt="DBSCAN Anomaly Detection Result - Dense clusters vs outliers flagged as noise" style="max-width: 100%; height: auto; border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); cursor: pointer;" class="zoomable-image" />
+                <p style="font-size: 0.9em; margin-top: 10px; color: #ccc;">
+                  <strong>Result:</strong> Dense clusters represent normal data patterns while outliers (red X's) are flagged as noise points, useful for fraud detection and quality control.
+                </p>
               </div>
-              <div class="app-box fragment">
-                <h3>Market Research</h3>
-                <p>Customer segmentation based on purchasing behavior</p>
+            </div>
+          </section>
+
+          <section>
+            <h2>Key Insights from Code Examples</h2>
+            <div class="insights-grid">
+              <div class="insight-box fragment">
+                <h3>Moons Dataset Clustering</h3>
+                <ul>
+                  <li>Demonstrates DBSCAN's ability to find non-spherical clusters</li>
+                  <li>The eps parameter controls neighborhood radius</li>
+                  <li>min_samples determines core point threshold</li>
+                  <li>Successfully separates two interleaving half-circles</li>
+                </ul>
               </div>
-              <div class="app-box fragment">
-                <h3>Geospatial Analysis</h3>
-                <p>Identifying hotspots in geographical data</p>
+              <div class="insight-box fragment">
+                <h3>Anomaly Detection Results</h3>
+                <ul>
+                  <li>Dense clusters represent normal data patterns</li>
+                  <li>Outliers are flagged as noise points (labeled -1)</li>
+                  <li>Red 'x' markers clearly identify anomalous data</li>
+                  <li>Useful for fraud detection and quality control</li>
+                </ul>
+              </div>
+            </div>
+            
+            <div class="applications-summary fragment">
+              <h3>Real-world Applications Summary</h3>
+              <div class="applications-grid">
+                <div class="app-box">
+                  <h4>Scientific Research</h4>
+                  <p>Wine quality analysis, temperature anomaly detection</p>
+                </div>
+                <div class="app-box">
+                  <h4>Business Intelligence</h4>
+                  <p>Customer segmentation, market analysis</p>
+                </div>
+                <div class="app-box">
+                  <h4>Security & Finance</h4>
+                  <p>Fraud detection, transaction monitoring</p>
+                </div>
+                <div class="app-box">
+                  <h4>Data Quality</h4>
+                  <p>Outlier identification, data validation</p>
+                </div>
               </div>
             </div>
           </section>
@@ -702,39 +781,135 @@ print(f'Optimal eps: {optimal_eps:.3f}')
         </section>
 
         <!-- Slide 25: Conclusions & Q&A -->
-        <section class="conclusion-slide">
-          <h2>Conclusions & Q&A</h2>
-          <div class="conclusions">
-            <div class="conclusion-points fragment">
-              <h3>Key Takeaways</h3>
-              <ul>
-                <li>
-                  DBSCAN family algorithms excel at finding arbitrary-shaped
-                  clusters
-                </li>
-                <li>
-                  Each method has specific strengths for different scenarios
-                </li>
-                <li>Proper parameter tuning and validation are essential</li>
-                <li>
-                  Combining multiple evaluation approaches provides robust
-                  results
-                </li>
-              </ul>
+        
+        <!-- Slide 26: Key Research Insights -->
+        <section>
+          <h2>Key Research Insights</h2>
+          <div class="insights-container">
+            <div class="insight-category fragment">
+              <h3>Algorithm Performance</h3>
+              <div class="insight-grid">
+                <div class="insight-item">
+                  <h4>DBSCAN Strengths</h4>
+                  <ul>
+                    <li>✓ No need to specify cluster count</li>
+                    <li>✓ Robust to noise and outliers</li>
+                    <li>✓ Finds arbitrary-shaped clusters</li>
+                    <li>✓ Computationally efficient O(n log n)</li>
+                  </ul>
+                </div>
+                <div class="insight-item">
+                  <h4>Critical Success Factors</h4>
+                  <ul>
+                    <li>⚡ Proper epsilon (ε) selection</li>
+                    <li>⚡ Appropriate min_samples value</li>
+                    <li>⚡ Data preprocessing and scaling</li>
+                    <li>⚡ Domain knowledge integration</li>
+                  </ul>
+                </div>
+              </div>
             </div>
-            <div class="future-work fragment">
-              <h3>Future Directions</h3>
-              <ul>
-                <li>Adaptive parameter selection methods</li>
-                <li>Integration with deep learning approaches</li>
-                <li>Scalability improvements for big data</li>
-                <li>Multi-view clustering applications</li>
-              </ul>
+            
+            <div class="insight-category fragment">
+              <h3>Comparative Analysis Results</h3>
+              <div class="comparison-insights">
+                <div class="method-insight">
+                  <span class="method-badge dbscan">DBSCAN</span>
+                  <p><strong>Best for:</strong> Uniform density clusters, fast processing, clear parameter interpretation</p>
+                </div>
+                <div class="method-insight">
+                  <span class="method-badge optics">OPTICS</span>
+                  <p><strong>Best for:</strong> Varying density clusters, hierarchical analysis, exploratory data analysis</p>
+                </div>
+                <div class="method-insight">
+                  <span class="method-badge hdbscan">HDBSCAN</span>
+                  <p><strong>Best for:</strong> Complex datasets, automatic parameter selection, stability requirements</p>
+                </div>
+              </div>
             </div>
           </div>
-          <div class="qa-section fragment">
-            <h2 class="qa-title">Questions & Discussion</h2>
-            <p class="qa-prompt">Thank you for your attention!</p>
+        </section>
+
+        <!-- Slide 27: Practical Implementation Guide -->
+        <section>
+          <h2>Practical Implementation Guide</h2>
+          <div class="implementation-guide">
+            <div class="guide-section fragment">
+              <h3>📊 When to Use DBSCAN</h3>
+              <div class="use-case-grid">
+                <div class="use-case">
+                  <h4>✅ Ideal Scenarios</h4>
+                  <ul>
+                    <li>Non-spherical cluster shapes</li>
+                    <li>Unknown number of clusters</li>
+                    <li>Presence of noise/outliers</li>
+                    <li>Spatial or geographic data</li>
+                    <li>Anomaly detection tasks</li>
+                  </ul>
+                </div>
+                <div class="use-case">
+                  <h4>❌ Avoid When</h4>
+                  <ul>
+                    <li>Varying cluster densities</li>
+                    <li>High-dimensional data (curse of dimensionality)</li>
+                    <li>Very large datasets without optimization</li>
+                    <li>All points are equally important</li>
+                    <li>Spherical clusters work well</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div class="guide-section fragment">
+              <h3>🔧 Implementation Best Practices</h3>
+              <div class="best-practices-grid">
+                <div class="practice-category">
+                  <h4>Data Preparation</h4>
+                  <ol>
+                    <li>Standardize/normalize features</li>
+                    <li>Handle missing values appropriately</li>
+                    <li>Consider dimensionality reduction</li>
+                    <li>Assess clustering tendency (Hopkins statistic)</li>
+                  </ol>
+                </div>
+                <div class="practice-category">
+                  <h4>Parameter Selection</h4>
+                  <ol>
+                    <li>Use k-distance graph for ε selection</li>
+                    <li>Set min_samples ≥ dimensions + 1</li>
+                    <li>Cross-validate with different metrics</li>
+                    <li>Consider domain expertise</li>
+                  </ol>
+                </div>
+                <div class="practice-category">
+                  <h4>Validation Strategy</h4>
+                  <ol>
+                    <li>Multiple internal validation metrics</li>
+                    <li>Visual inspection of results</li>
+                    <li>Stability analysis across parameters</li>
+                    <li>Business/domain validation</li>
+                  </ol>
+                </div>
+              </div>
+            </div>
+
+            <div class="guide-section fragment">
+              <h3>📈 Quality Assessment Framework</h3>
+              <div class="quality-framework">
+                <div class="metric-tier">
+                  <h4>Primary Metrics</h4>
+                  <span class="metric-list">Silhouette Score • Davies-Bouldin Index • Calinski-Harabasz Index</span>
+                </div>
+                <div class="metric-tier">
+                  <h4>Secondary Metrics</h4>
+                  <span class="metric-list">Dunn Index • DBCV • Adjusted Rand Index (if ground truth available)</span>
+                </div>
+                <div class="metric-tier">
+                  <h4>Domain-Specific</h4>
+                  <span class="metric-list">Business KPIs • Expert Evaluation • Interpretability Measures</span>
+                </div>
+              </div>
+            </div>
           </div>
         </section>
       </div>

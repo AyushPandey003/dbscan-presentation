@@ -115,6 +115,10 @@ Reveal.initialize({
   // Time before the cursor is hidden (in ms)
   hideCursorTime: 5000,
 
+  // Allow content to overflow slide bounds
+  maxScale: 3,
+  minScale: 0.2,
+
   // Plugin configuration
   plugins: [RevealHighlight, RevealZoom, RevealNotes],
 
@@ -137,7 +141,13 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Custom keyboard shortcuts
   document.addEventListener("keydown", function (event) {
-    // Press 'f' for fullscreen
+    // Press F1 for fullscreen
+    if (event.key === "F1") {
+      event.preventDefault();
+      toggleFullscreen();
+    }
+
+    // Press 'f' for fullscreen (alternative)
     if (event.key === "f" || event.key === "F") {
       toggleFullscreen();
     }
@@ -161,12 +171,28 @@ document.addEventListener("DOMContentLoaded", function () {
   initializeSlideCounter();
   addAccessibilityFeatures();
   initializeCodeHighlighting();
+  initializeImageZoom(); // Add image click functionality
+  
+  // Fallback: Open image in new window for any image clicked directly
+  document.addEventListener('click', (e) => {
+    if (e.target.tagName === 'IMG' && !e.target.classList.contains('no-zoom')) {
+      const isAlreadyInitialized = e.target.hasAttribute('data-click-initialized');
+      if (!isAlreadyInitialized) {
+        console.log('Fallback: Opening image in new window for clicked image');
+        e.preventDefault();
+        e.stopPropagation();
+        openImageInNewWindow(e.target);
+      }
+    }
+  });
 
   // Add touch gesture support for mobile
   if (isMobileDevice()) {
     initializeTouchGestures();
   }
 });
+
+
 
 // Fullscreen functionality
 function toggleFullscreen() {
@@ -178,6 +204,105 @@ function toggleFullscreen() {
     document.exitFullscreen();
   }
 }
+
+// Image open in new window functionality
+function initializeImageZoom() {
+  console.log('Initializing image click to open in new window...');
+  
+  // Function to add click functionality to images
+  function addClickToImages() {
+    const images = document.querySelectorAll('img:not(.no-zoom):not([data-click-initialized]), .zoomable-image:not([data-click-initialized])');
+    console.log(`Found ${images.length} images to add click functionality to`);
+    
+    images.forEach((img, index) => {
+      img.style.cursor = 'pointer';
+      img.addEventListener('click', (e) => {
+        e.preventDefault();
+        e.stopPropagation();
+        console.log(`Opening image ${index + 1} in new window:`, img.src);
+        openImageInNewWindow(img);
+      });
+      img.setAttribute('data-click-initialized', 'true');
+    });
+  }
+  
+  // Initial setup
+  setTimeout(addClickToImages, 1000);
+  
+  // Re-initialize on slide changes
+  Reveal.on('slidechanged', () => {
+    setTimeout(addClickToImages, 500);
+  });
+  
+  // Also initialize when fragments are shown
+  Reveal.on('fragmentshown', () => {
+    setTimeout(addClickToImages, 300);
+  });
+}
+
+function openImageInNewWindow(img) {
+  console.log('Opening image in new window:', img.src);
+  
+  // Get the full URL of the image
+  const imageUrl = new URL(img.src, window.location.origin).href;
+  
+  // Create window features for a nice image display
+  const windowFeatures = 'width=1200,height=800,scrollbars=yes,resizable=yes,toolbar=no,menubar=no,location=no,status=no';
+  
+  // Open the image in a new window
+  const newWindow = window.open('', '_blank', windowFeatures);
+  
+  if (newWindow) {
+    newWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <title>${img.alt || 'Image View'}</title>
+        <style>
+          body {
+            margin: 0;
+            padding: 20px;
+            background: #000;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            font-family: Arial, sans-serif;
+          }
+          img {
+            max-width: 100%;
+            max-height: 90vh;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 0 30px rgba(255, 255, 255, 0.3);
+          }
+          .caption {
+            color: #fff;
+            margin-top: 20px;
+            text-align: center;
+            font-size: 16px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 5px;
+            max-width: 80%;
+          }
+        </style>
+      </head>
+      <body>
+        <img src="${imageUrl}" alt="${img.alt || 'Zoomed image'}" />
+        ${img.alt ? `<div class="caption">${img.alt}</div>` : ''}
+      </body>
+      </html>
+    `);
+    newWindow.document.close();
+  } else {
+    // Fallback: if popup is blocked, try to open in same tab
+    window.open(imageUrl, '_blank');
+  }
+}
+
+
 
 // Theme toggle functionality (for future enhancement)
 function toggleTheme() {
@@ -206,9 +331,10 @@ function showHelp() {
                     <li><strong>← / ↑</strong> - Previous slide</li>
                     <li><strong>Space</strong> - Next slide</li>
                     <li><strong>Esc</strong> - Slide overview</li>
-                    <li><strong>F</strong> - Fullscreen</li>
+                    <li><strong>F / F1</strong> - Fullscreen toggle</li>
                     <li><strong>S</strong> - Speaker notes</li>
                     <li><strong>B</strong> - Blackout</li>
+                    <li><strong>Click Image</strong> - Open image in new window</li>
                     <li><strong>?</strong> - Show this help</li>
                 </ul>
                 <button onclick="closeHelp()" class="btn btn--primary">Close</button>
