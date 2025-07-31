@@ -1,468 +1,420 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>
-      DBSCAN – Relative Merits of Each Method – Clustering Tendency and Quality
-    </title>
 
-    <!-- Reveal.js CSS -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css"
-    />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/black.css"
-    />
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>
+    DBSCAN – Relative Merits of Each Method – Clustering Tendency and Quality
+  </title>
 
-    <!-- Highlight.js for code syntax highlighting -->
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/atom-one-dark.css"
-    />
+  <!-- Reveal.js CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css" />
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/black.css" />
 
-    <!-- Google Fonts -->
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap"
-      rel="stylesheet"
-    />
+  <!-- Highlight.js for code syntax highlighting -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/highlight.js@11.8.0/styles/atom-one-dark.css" />
 
-    <!-- Custom CSS -->
-    <link rel="stylesheet" href="style.css" />
-    <script
-      src="https://cdn.plot.ly/plotly-2.32.0.min.js"
-      charset="utf-8"
-    ></script>
-    <!-- Simple DBSCAN implementation for demo -->
-    <script>
-      // Simple DBSCAN implementation
-      function dbscan(points, eps, minPts) {
-        const clusters = [];
-        const visited = new Set();
-        const noise = new Set();
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet" />
 
-        function distance(p1, p2) {
-          return Math.sqrt(
-            Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2)
-          );
-        }
+  <!-- Custom CSS -->
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.plot.ly/plotly-2.32.0.min.js" charset="utf-8"></script>
+  <!-- Simple DBSCAN implementation for demo -->
+  <script>
+    // Simple DBSCAN implementation
+    function dbscan(points, eps, minPts) {
+      const clusters = [];
+      const visited = new Set();
+      const noise = new Set();
 
-        function regionQuery(pointIdx) {
-          const neighbors = [];
-          for (let i = 0; i < points.length; i++) {
-            if (distance(points[pointIdx], points[i]) <= eps) {
-              neighbors.push(i);
-            }
-          }
-          return neighbors;
-        }
-
-        function expandCluster(pointIdx, neighbors, clusterId) {
-          clusters[pointIdx] = clusterId;
-
-          for (let i = 0; i < neighbors.length; i++) {
-            const neighborIdx = neighbors[i];
-
-            if (!visited.has(neighborIdx)) {
-              visited.add(neighborIdx);
-              const neighborNeighbors = regionQuery(neighborIdx);
-
-              if (neighborNeighbors.length >= minPts) {
-                neighbors = neighbors.concat(neighborNeighbors);
-              }
-            }
-
-            if (clusters[neighborIdx] === undefined) {
-              clusters[neighborIdx] = clusterId;
-            }
-          }
-        }
-
-        let clusterId = 0;
-
-        for (let i = 0; i < points.length; i++) {
-          if (visited.has(i)) continue;
-
-          visited.add(i);
-          const neighbors = regionQuery(i);
-
-          if (neighbors.length < minPts) {
-            noise.add(i);
-            clusters[i] = -1; // Mark as noise
-          } else {
-            expandCluster(i, neighbors, clusterId);
-            clusterId++;
-          }
-        }
-
-        return clusters;
+      function distance(p1, p2) {
+        return Math.sqrt(
+          Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2)
+        );
       }
-    </script>
-  </head>
-  <body>
-    <div class="reveal">
-      <div class="slides">
-        <!-- Slide 1: Title -->
-        <section class="title-slide">
-          <h1 class="main-title">DBSCAN</h1>
-          <h2 class="subtitle">
-            Relative Merits of Each Method<br />Clustering Tendency and Quality
-          </h2>
-          <div class="author-info">
-            <h3 style="color: var(--primary-neon); margin-bottom: 1rem">
-              Group Members
-            </h3>
-            <div
-              class="group-members"
-              style="text-align: left; max-width: 600px; margin: 0 auto"
-            >
-              <p class="member">1. Atharv Sathe | 22BCE10388</p>
-              <p class="member">2. Ayush Pandey | 22BCE10375</p>
-              <p class="member">3. Harsh Markandey | 22BCE10861</p>
-              <p class="member">4. Meet Bhikani | 22BCE11618</p>
-              <p class="member">5. Manvendra Pratap Singh | 22BCE11382</p>
+
+      function regionQuery(pointIdx) {
+        const neighbors = [];
+        for (let i = 0; i < points.length; i++) {
+          if (distance(points[pointIdx], points[i]) <= eps) {
+            neighbors.push(i);
+          }
+        }
+        return neighbors;
+      }
+
+      function expandCluster(pointIdx, neighbors, clusterId) {
+        clusters[pointIdx] = clusterId;
+
+        for (let i = 0; i < neighbors.length; i++) {
+          const neighborIdx = neighbors[i];
+
+          if (!visited.has(neighborIdx)) {
+            visited.add(neighborIdx);
+            const neighborNeighbors = regionQuery(neighborIdx);
+
+            if (neighborNeighbors.length >= minPts) {
+              neighbors = neighbors.concat(neighborNeighbors);
+            }
+          }
+
+          if (clusters[neighborIdx] === undefined) {
+            clusters[neighborIdx] = clusterId;
+          }
+        }
+      }
+
+      let clusterId = 0;
+
+      for (let i = 0; i < points.length; i++) {
+        if (visited.has(i)) continue;
+
+        visited.add(i);
+        const neighbors = regionQuery(i);
+
+        if (neighbors.length < minPts) {
+          noise.add(i);
+          clusters[i] = -1; // Mark as noise
+        } else {
+          expandCluster(i, neighbors, clusterId);
+          clusterId++;
+        }
+      }
+
+      return clusters;
+    }
+  </script>
+</head>
+
+<body>
+  <div class="reveal">
+    <div class="slides">
+      <!-- Slide 1: Title -->
+      <section class="title-slide">
+        <h1 class="main-title">DBSCAN</h1>
+        <h2 class="subtitle">
+          Relative Merits of Each Method<br />Clustering Tendency and Quality
+        </h2>
+        <div class="author-info">
+          <h3 style="color: var(--primary-neon); margin-bottom: 1rem">
+            Group Members
+          </h3>
+          <div class="group-members" style="text-align: left; max-width: 600px; margin: 0 auto">
+            <p class="member">1. Atharv Sathe | 22BCE10388</p>
+            <p class="member">2. Ayush Pandey | 22BCE10375</p>
+            <p class="member">3. Harsh Markandey | 22BCE10861</p>
+            <p class="member">4. Meet Bhikani | 22BCE11618</p>
+            <p class="member">5. Manvendra Pratap Singh | 22BCE11382</p>
+          </div>
+          <p class="course-info" style="margin-top: 2rem; font-size: 1.1rem">
+            Fundamentals of Data Science
+          </p>
+          <p class="date">July 2025</p>
+        </div>
+      </section>
+
+      <!-- Slide 2: Agenda -->
+      <section class="agenda-slide">
+        <h2>Agenda</h2>
+        <ul class="agenda-list">
+          <li class="fragment">Introduction to DBSCAN</li>
+          <li class="fragment">DBSCAN Parameters & Intuition</li>
+          <li class="fragment">Alternative Density-Based Methods</li>
+          <li class="fragment">Relative Merits Comparison</li>
+          <li class="fragment">Clustering Tendency Assessment</li>
+          <li class="fragment">Quality Metrics Analysis</li>
+          <li class="fragment">Case Study & Code Examples</li>
+          <li class="fragment">Visual Comparisons & Summary</li>
+          <li class="fragment">Conclusions</li>
+        </ul>
+      </section>
+
+      <!-- Slides 3-5: Introduction to DBSCAN -->
+      <section>
+        <section class="section-title">
+          <h1>Introduction to DBSCAN</h1>
+          <p class="section-subtitle">
+            Density-Based Spatial Clustering of Applications with Noise
+          </p>
+          <img style="width: 50vw; height: 70vh" src="./dbscan_intro.png" />
+        </section>
+
+        <section>
+          <h2>What is DBSCAN?</h2>
+          <ul>
+            <li class="fragment">
+              <strong>DBSCAN</strong> (Density-Based Spatial Clustering of
+              Applications with Noise)
+            </li>
+            <li class="fragment">
+              Groups together points that are closely packed
+            </li>
+            <li class="fragment">
+              Marks points in low-density regions as <em>outliers</em>
+            </li>
+            <li class="fragment">
+              Does not require pre-specifying the number of clusters
+            </li>
+            <li class="fragment">Can find arbitrarily shaped clusters</li>
+          </ul>
+          <div id="dbscan-interactive-chart" class="fragment" style="height: 400px"></div>
+        </section>
+
+        <section>
+          <h2>Key Concepts</h2>
+          <div class="concepts-grid">
+            <div class="concept-box fragment">
+              <h3>Core Points</h3>
+              <p>
+                Points with at least <code>min_samples</code> neighbors within
+                distance <code>ε</code>
+              </p>
             </div>
-            <p class="course-info" style="margin-top: 2rem; font-size: 1.1rem">
-              Fundamentals of Data Science
-            </p>
-            <p class="date">July 2025</p>
+            <div class="concept-box fragment">
+              <h3>Border Points</h3>
+              <p>
+                Non-core points within <code>ε</code> distance of a core point
+              </p>
+            </div>
+            <div class="concept-box fragment">
+              <h3>Noise Points</h3>
+              <p>Points that are neither core nor border points</p>
+            </div>
+          </div>
+        </section>
+      </section>
+
+      <!-- Slides 6-8: DBSCAN Parameters & Intuition -->
+      <section>
+        <section class="section-title">
+          <h1>DBSCAN Parameters & Intuition</h1>
+          <p class="section-subtitle">Understanding ε and min_samples</p>
+          <img style="width: 50vw; height: 60vh" src="./dbscan_params.png" />
+        </section>
+
+        <section>
+          <h2>The Two Key Parameters</h2>
+          <div class="parameters-grid">
+            <div class="parameter-box fragment">
+              <h3>ε (Epsilon)</h3>
+              <ul>
+                <li>Maximum distance between two samples</li>
+                <li>Defines the "neighborhood" radius</li>
+                <li>Too small: many small clusters or noise</li>
+                <li>Too large: all points in one cluster</li>
+              </ul>
+            </div>
+            <div class="parameter-box fragment">
+              <h3>min_samples</h3>
+              <ul>
+                <li>Minimum points required to form a dense region</li>
+                <li>Higher values = more robust to noise</li>
+                <li>Lower values = more sensitive clusters</li>
+                <li>Generally: min_samples = 2 × dimensions</li>
+              </ul>
+            </div>
           </div>
         </section>
 
-        <!-- Slide 2: Agenda -->
-        <section class="agenda-slide">
-          <h2>Agenda</h2>
-          <ul class="agenda-list">
-            <li class="fragment">Introduction to DBSCAN</li>
-            <li class="fragment">DBSCAN Parameters & Intuition</li>
-            <li class="fragment">Alternative Density-Based Methods</li>
-            <li class="fragment">Relative Merits Comparison</li>
-            <li class="fragment">Clustering Tendency Assessment</li>
-            <li class="fragment">Quality Metrics Analysis</li>
-            <li class="fragment">Case Study & Code Examples</li>
-            <li class="fragment">Visual Comparisons & Summary</li>
-            <li class="fragment">Conclusions</li>
-          </ul>
-        </section>
-
-        <!-- Slides 3-5: Introduction to DBSCAN -->
         <section>
-          <section class="section-title">
-            <h1>Introduction to DBSCAN</h1>
-            <p class="section-subtitle">
-              Density-Based Spatial Clustering of Applications with Noise
-            </p>
-            <img style="width: 50vw; height: 70vh" src="./dbscan_intro.png" />
-          </section>
-
-          <section>
-            <h2>What is DBSCAN?</h2>
-            <ul>
-              <li class="fragment">
-                <strong>DBSCAN</strong> (Density-Based Spatial Clustering of
-                Applications with Noise)
-              </li>
-              <li class="fragment">
-                Groups together points that are closely packed
-              </li>
-              <li class="fragment">
-                Marks points in low-density regions as <em>outliers</em>
-              </li>
-              <li class="fragment">
-                Does not require pre-specifying the number of clusters
-              </li>
-              <li class="fragment">Can find arbitrarily shaped clusters</li>
-            </ul>
-            <div
-              id="dbscan-interactive-chart"
-              class="fragment"
-              style="height: 400px"
-            ></div>
-          </section>
-
-          <section>
-            <h2>Key Concepts</h2>
-            <div class="concepts-grid">
-              <div class="concept-box fragment">
-                <h3>Core Points</h3>
-                <p>
-                  Points with at least <code>min_samples</code> neighbors within
-                  distance <code>ε</code>
-                </p>
-              </div>
-              <div class="concept-box fragment">
-                <h3>Border Points</h3>
-                <p>
-                  Non-core points within <code>ε</code> distance of a core point
-                </p>
-              </div>
-              <div class="concept-box fragment">
-                <h3>Noise Points</h3>
-                <p>Points that are neither core nor border points</p>
-              </div>
-            </div>
-          </section>
-        </section>
-
-        <!-- Slides 6-8: DBSCAN Parameters & Intuition -->
-        <section>
-          <section class="section-title">
-            <h1>DBSCAN Parameters & Intuition</h1>
-            <p class="section-subtitle">Understanding ε and min_samples</p>
-            <img style="width: 50vw; height: 60vh" src="./dbscan_params.png" />
-          </section>
-
-          <section>
-            <h2>The Two Key Parameters</h2>
-            <div class="parameters-grid">
-              <div class="parameter-box fragment">
-                <h3>ε (Epsilon)</h3>
-                <ul>
-                  <li>Maximum distance between two samples</li>
-                  <li>Defines the "neighborhood" radius</li>
-                  <li>Too small: many small clusters or noise</li>
-                  <li>Too large: all points in one cluster</li>
-                </ul>
-              </div>
-              <div class="parameter-box fragment">
-                <h3>min_samples</h3>
-                <ul>
-                  <li>Minimum points required to form a dense region</li>
-                  <li>Higher values = more robust to noise</li>
-                  <li>Lower values = more sensitive clusters</li>
-                  <li>Generally: min_samples = 2 × dimensions</li>
-                </ul>
-              </div>
-            </div>
-          </section>
-
-          <section>
-            <h2>Live Demo: Parameter Intuition</h2>
-            <div style="display: flex; gap: 2rem; align-items: center">
-              <div
-                id="dbscan-demo-chart"
-                style="
+          <h2>Live Demo: Parameter Intuition</h2>
+          <div style="display: flex; gap: 2rem; align-items: center">
+            <div id="dbscan-demo-chart" style="
                   flex: 2;
                   height: 450px;
                   min-height: 450px;
                   border: 1px solid rgba(255, 255, 255, 0.3);
-                "
-              ></div>
-              <div style="flex: 1">
-                <div class="parameter-box" style="margin-bottom: 2rem">
-                  <h3>ε (Epsilon)</h3>
-                  <p>Defines the neighborhood radius.</p>
-                  <input
-                    type="range"
-                    id="epsilon-slider"
-                    min="0.1"
-                    max="3.0"
-                    step="0.1"
-                    value="1.0"
-                    style="width: 100%"
-                  />
-                  <p
-                    style="
+                "></div>
+            <div style="flex: 1">
+              <div class="parameter-box" style="margin-bottom: 2rem">
+                <h3>ε (Epsilon)</h3>
+                <p>Defines the neighborhood radius.</p>
+                <input type="range" id="epsilon-slider" min="0.1" max="3.0" step="0.1" value="1.0"
+                  style="width: 100%" />
+                <p style="
                       text-align: center;
                       color: var(--primary-neon);
                       margin-top: 0.5rem;
-                    "
-                  >
-                    Value: <span id="epsilon-value">1.0</span>
-                  </p>
-                </div>
-                <div class="parameter-box">
-                  <h3>min_samples</h3>
-                  <p>Minimum points in a neighborhood.</p>
-                  <input
-                    type="range"
-                    id="minsamples-slider"
-                    min="1"
-                    max="10"
-                    step="1"
-                    value="3"
-                    style="width: 100%"
-                  />
-                  <p
-                    style="
+                    ">
+                  Value: <span id="epsilon-value">1.0</span>
+                </p>
+              </div>
+              <div class="parameter-box">
+                <h3>min_samples</h3>
+                <p>Minimum points in a neighborhood.</p>
+                <input type="range" id="minsamples-slider" min="1" max="10" step="1" value="3" style="width: 100%" />
+                <p style="
                       text-align: center;
                       color: var(--primary-neon);
                       margin-top: 0.5rem;
-                    "
-                  >
-                    Value: <span id="minsamples-value">3</span>
-                  </p>
-                </div>
+                    ">
+                  Value: <span id="minsamples-value">3</span>
+                </p>
               </div>
             </div>
-          </section>
-
-          <section>
-            <h2>Parameter Sensitivity Analysis</h2>
-            <div class="chart-container">
-              <img
-                src="https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/90f8f9d183ad3da102ef2390770398ef/68234336-08d3-4dd7-b557-3954812ac0e4/1c72483a.png"
-                alt="DBSCAN Parameter Sensitivity Heatmap"
-                class="chart-image"
-              />
-            </div>
-            <p class="fragment">
-              Darker regions indicate better clustering quality (higher
-              silhouette scores)
-            </p>
-          </section>
+          </div>
         </section>
 
-        <!-- Slides 9-11: Alternative Density-Based Methods -->
         <section>
-          <section class="section-title">
-            <h1>Alternative Density-Based Methods</h1>
-            <p class="section-subtitle">OPTICS and HDBSCAN</p>
-            <img style="width: 50vw; height: 70vh" src="https://cdn-images-1.medium.com/v2/resize:fit:800/1*CHhb45CRYl5ZJbpmP__CVQ.jpeg" />
-          </section>
+          <h2>Parameter Sensitivity Analysis</h2>
+          <div class="chart-container">
+            <img
+              src="https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/90f8f9d183ad3da102ef2390770398ef/68234336-08d3-4dd7-b557-3954812ac0e4/1c72483a.png"
+              alt="DBSCAN Parameter Sensitivity Heatmap" class="chart-image" />
+          </div>
+          <p class="fragment">
+            Darker regions indicate better clustering quality (higher
+            silhouette scores)
+          </p>
+        </section>
+      </section>
 
-          <section>
-            <h2>OPTICS Algorithm</h2>
-            <div class="algorithm-info">
-              <div class="algorithm-description">
-                <ul>
-                  <li class="fragment">
-                    <strong
-                      >Ordering Points To Identify Clustering Structure</strong
-                    >
-                  </li>
-                  <li class="fragment">
-                    Creates a reachability plot instead of direct clustering
-                  </li>
-                  <li class="fragment">
-                    Can extract clusters at different density levels
-                  </li>
-                  <li class="fragment">
-                    More flexible than DBSCAN for varying densities
-                  </li>
-                  <li class="fragment">
-                    Requires additional step to extract clusters
-                  </li>
-                </ul>
-              </div>
-              <div class="algorithm-image fragment">
-                <img
-                  src="https://pplx-res.cloudinary.com/image/upload/v1753867029/pplx_project_search_images/24a23de290e9043ca9acda6d1ba603d84894980a.jpg"
-                  alt="Density-based methods comparison"
-                  class="method-comparison"
-                />
-              </div>
+      <!-- Slides 9-11: Alternative Density-Based Methods -->
+      <section>
+        <section class="section-title">
+          <h1>Alternative Density-Based Methods</h1>
+          <p class="section-subtitle">OPTICS and HDBSCAN</p>
+          <img style="width: 50vw; height: 70vh"
+            src="https://cdn-images-1.medium.com/v2/resize:fit:800/1*CHhb45CRYl5ZJbpmP__CVQ.jpeg" />
+        </section>
+
+        <section>
+          <h2>OPTICS Algorithm</h2>
+          <div class="algorithm-info">
+            <div class="algorithm-description">
+              <ul>
+                <li class="fragment">
+                  <strong>Ordering Points To Identify Clustering Structure</strong>
+                </li>
+                <li class="fragment">
+                  Creates a reachability plot instead of direct clustering
+                </li>
+                <li class="fragment">
+                  Can extract clusters at different density levels
+                </li>
+                <li class="fragment">
+                  More flexible than DBSCAN for varying densities
+                </li>
+                <li class="fragment">
+                  Requires additional step to extract clusters
+                </li>
+              </ul>
             </div>
-          </section>
+            <div class="algorithm-image fragment">
+              <img
+                src="https://pplx-res.cloudinary.com/image/upload/v1753867029/pplx_project_search_images/24a23de290e9043ca9acda6d1ba603d84894980a.jpg"
+                alt="Density-based methods comparison" class="method-comparison" />
+            </div>
+          </div>
+        </section>
 
-          <section>
-            <h2>HDBSCAN Algorithm</h2>
-            <ul>
-              <li class="fragment"><strong>Hierarchical DBSCAN</strong></li>
-              <li class="fragment">Extends DBSCAN to varying densities</li>
-              <li class="fragment">Builds a hierarchy of clusters</li>
-              <li class="fragment">Automatically extracts stable clusters</li>
-              <li class="fragment">More robust parameter selection</li>
-              <li class="fragment">
-                Can handle clusters of different densities
-              </li>
-            </ul>
-            <div class="code-example fragment">
-              <pre><code class="python">
+        <section>
+          <h2>HDBSCAN Algorithm</h2>
+          <ul>
+            <li class="fragment"><strong>Hierarchical DBSCAN</strong></li>
+            <li class="fragment">Extends DBSCAN to varying densities</li>
+            <li class="fragment">Builds a hierarchy of clusters</li>
+            <li class="fragment">Automatically extracts stable clusters</li>
+            <li class="fragment">More robust parameter selection</li>
+            <li class="fragment">
+              Can handle clusters of different densities
+            </li>
+          </ul>
+          <div class="code-example fragment">
+            <pre><code class="python">
 from hdbscan import HDBSCAN
 clusterer = HDBSCAN(min_cluster_size=10)
 cluster_labels = clusterer.fit_predict(data)
                         </code></pre>
-            </div>
-          </section>
+          </div>
+        </section>
+      </section>
+
+      <!-- Slides 12-14: Relative Merits Comparison -->
+      <section>
+        <section class="section-title">
+          <h1>Relative Merits Comparison</h1>
+          <p class="section-subtitle">DBSCAN vs OPTICS vs HDBSCAN</p>
+          <img style="width: 50vw; height: 70vh"
+            src="https://d2o2utebsixu4k.cloudfront.net/img-7435455247774f58b994508180f7793c.png" />
         </section>
 
-        <!-- Slides 12-14: Relative Merits Comparison -->
         <section>
-          <section class="section-title">
-            <h1>Relative Merits Comparison</h1>
-            <p class="section-subtitle">DBSCAN vs OPTICS vs HDBSCAN</p>
-            <img style="width: 50vw; height: 70vh" src="https://d2o2utebsixu4k.cloudfront.net/img-7435455247774f58b994508180f7793c.png" />
-          </section>
-
-          <section>
-            <h2>Performance Comparison</h2>
-            <div class="chart-container">
-              <img
-                src="https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/90f8f9d183ad3da102ef2390770398ef/d8612ad8-e525-4603-9d9a-0558924abe57/f75df54f.png"
-                alt="Silhouette Score Comparison"
-                class="chart-image"
-              />
-            </div>
-            <p class="fragment">
-              Clustering quality comparison across different datasets
-            </p>
-          </section>
-
-          <section>
-            <h2>Strengths and Weaknesses</h2>
-            <div class="comparison-table">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Algorithm</th>
-                    <th>Strengths</th>
-                    <th>Weaknesses</th>
-                  </tr>
-                </thead>
-                <tbody class="fragment">
-                  <tr>
-                    <td><strong>DBSCAN</strong></td>
-                    <td>Simple, fast, handles noise well</td>
-                    <td>
-                      Sensitive to parameters, struggles with varying densities
-                    </td>
-                  </tr>
-                  <tr class="fragment">
-                    <td><strong>OPTICS</strong></td>
-                    <td>
-                      Handles varying densities, produces reachability plot
-                    </td>
-                    <td>Requires additional clustering step, more complex</td>
-                  </tr>
-                  <tr class="fragment">
-                    <td><strong>HDBSCAN</strong></td>
-                    <td>Robust to parameters, hierarchical structure</td>
-                    <td>
-                      More computationally expensive, complex interpretation
-                    </td>
-                  </tr>
-                </tbody>
-              </table>
-            </div>
-          </section>
+          <h2>Performance Comparison</h2>
+          <div class="chart-container">
+            <img
+              src="https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/90f8f9d183ad3da102ef2390770398ef/d8612ad8-e525-4603-9d9a-0558924abe57/f75df54f.png"
+              alt="Silhouette Score Comparison" class="chart-image" />
+          </div>
+          <p class="fragment">
+            Clustering quality comparison across different datasets
+          </p>
         </section>
 
-        <!-- Slides 15-17: Clustering Tendency Assessment -->
         <section>
-          <section class="section-title">
-            <h1>Clustering Tendency Assessment</h1>
-            <p class="section-subtitle">
-              Determining if clusters exist in data
-            </p>
-          </section>
+          <h2>Strengths and Weaknesses</h2>
+          <div class="comparison-table">
+            <table>
+              <thead>
+                <tr>
+                  <th>Algorithm</th>
+                  <th>Strengths</th>
+                  <th>Weaknesses</th>
+                </tr>
+              </thead>
+              <tbody class="fragment">
+                <tr>
+                  <td><strong>DBSCAN</strong></td>
+                  <td>Simple, fast, handles noise well</td>
+                  <td>
+                    Sensitive to parameters, struggles with varying densities
+                  </td>
+                </tr>
+                <tr class="fragment">
+                  <td><strong>OPTICS</strong></td>
+                  <td>
+                    Handles varying densities, produces reachability plot
+                  </td>
+                  <td>Requires additional clustering step, more complex</td>
+                </tr>
+                <tr class="fragment">
+                  <td><strong>HDBSCAN</strong></td>
+                  <td>Robust to parameters, hierarchical structure</td>
+                  <td>
+                    More computationally expensive, complex interpretation
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+      </section>
 
-          <section>
-            <h2>Hopkins Statistic</h2>
-            <ul>
-              <li class="fragment">Tests the spatial randomness of data</li>
-              <li class="fragment">Values close to 0.5 indicate random data</li>
-              <li class="fragment">
-                Values significantly different from 0.5 suggest clustering
-                tendency
-              </li>
-              <li class="fragment">H < 0.5: Regular/uniform data</li>
-              <li class="fragment">H > 0.5: Clustered data</li>
-            </ul>
-            <div class="code-example fragment">
-              <pre><code class="python">
+      <!-- Slides 15-17: Clustering Tendency Assessment -->
+      <section>
+        <section class="section-title">
+          <h1>Clustering Tendency Assessment</h1>
+          <p class="section-subtitle">
+            Determining if clusters exist in data
+          </p>
+        </section>
+
+        <section>
+          <h2>Hopkins Statistic</h2>
+          <ul>
+            <li class="fragment">Tests the spatial randomness of data</li>
+            <li class="fragment">Values close to 0.5 indicate random data</li>
+            <li class="fragment">
+              Values significantly different from 0.5 suggest clustering
+              tendency
+            </li>
+            <li class="fragment">H < 0.5: Regular/uniform data</li>
+            <li class="fragment">H > 0.5: Clustered data</li>
+          </ul>
+          <div class="code-example fragment">
+            <pre><code class="python">
 from sklearn.neighbors import NearestNeighbors
 import numpy as np
 
@@ -480,100 +432,94 @@ def hopkins_statistic(X, sample_size=None):
     
     return np.sum(distances) / (np.sum(distances) + np.sum(sample_distances))
                         </code></pre>
-            </div>
-          </section>
-
-          <section>
-            <h2>Visual Assessment Techniques</h2>
-            <div class="visual-techniques">
-              <div class="technique-box fragment">
-                <h3>VAT (Visual Assessment of Tendency)</h3>
-                <ul>
-                  <li>Reorders dissimilarity matrix</li>
-                  <li>Dark blocks indicate clusters</li>
-                  <li>Visual inspection of structure</li>
-                </ul>
-              </div>
-              <div class="technique-box fragment">
-                <h3>Cluster Validation Plot</h3>
-                <img
-                  src="https://pplx-res.cloudinary.com/image/upload/v1753867030/pplx_project_search_images/c37efd4e83ae56ae1f36609d7fe7d5899098e039.jpg"
-                  alt="Cluster validation visualization"
-                  class="validation-plot"
-                />
-              </div>
-            </div>
-          </section>
+          </div>
         </section>
 
-        <!-- Slides 18-20: Quality Metrics Analysis -->
         <section>
-          <section class="section-title">
-            <h1>Quality Metrics Analysis</h1>
-            <p class="section-subtitle">Evaluating clustering performance</p>
-          </section>
-
-          <section>
-            <h2>Internal Validation Metrics</h2>
-            <ul>
-              <li class="fragment">
-                <strong>Silhouette Score</strong>: Measures how similar points
-                are to their own cluster vs other clusters
-              </li>
-              <li class="fragment">
-                <strong>Davies-Bouldin Index</strong>: Lower values indicate
-                better clustering
-              </li>
-              <li class="fragment">
-                <strong>Calinski-Harabasz Index</strong>: Higher values indicate
-                better defined clusters
-              </li>
-              <li class="fragment">
-                <strong>Dunn Index</strong>: Ratio of minimum inter-cluster to
-                maximum intra-cluster distance
-              </li>
-            </ul>
-            <div class="formula-box fragment">
-              <h4>Silhouette Score Formula:</h4>
-              <p>s(i) = (b(i) - a(i)) / max(a(i), b(i))</p>
-              <p>
-                <small
-                  >Where a(i) = avg distance to same cluster, b(i) = avg
-                  distance to nearest cluster</small
-                >
-              </p>
+          <h2>Visual Assessment Techniques</h2>
+          <div class="visual-techniques">
+            <div class="technique-box fragment">
+              <h3>VAT (Visual Assessment of Tendency)</h3>
+              <ul>
+                <li>Reorders dissimilarity matrix</li>
+                <li>Dark blocks indicate clusters</li>
+                <li>Visual inspection of structure</li>
+              </ul>
             </div>
-          </section>
-
-          <section>
-            <h2>DBSCAN Quality Assessment</h2>
-            <div class="chart-container">
+            <div class="technique-box fragment">
+              <h3>Cluster Validation Plot</h3>
               <img
-                src="https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/90f8f9d183ad3da102ef2390770398ef/419b8577-86c5-4b7e-984b-9714fac909a5/2272bfe5.png"
-                alt="DBSCAN Performance Radar Chart"
-                class="chart-image"
-              />
+                src="https://pplx-res.cloudinary.com/image/upload/v1753867030/pplx_project_search_images/c37efd4e83ae56ae1f36609d7fe7d5899098e039.jpg"
+                alt="Cluster validation visualization" class="validation-plot" />
             </div>
-            <p class="fragment">
-              Multi-dimensional view of DBSCAN performance across various
-              metrics
-            </p>
-          </section>
+          </div>
+        </section>
+      </section>
+
+      <!-- Slides 18-20: Quality Metrics Analysis -->
+      <section>
+        <section class="section-title">
+          <h1>Quality Metrics Analysis</h1>
+          <p class="section-subtitle">Evaluating clustering performance</p>
         </section>
 
-        <!-- Slides 21-23: Case Study & Code Examples -->
         <section>
-          <section class="section-title">
-            <h1>Case Study & Code Examples</h1>
-            <p class="section-subtitle">
-              Practical implementation and applications
+          <h2>Internal Validation Metrics</h2>
+          <ul>
+            <li class="fragment">
+              <strong>Silhouette Score</strong>: Measures how similar points
+              are to their own cluster vs other clusters
+            </li>
+            <li class="fragment">
+              <strong>Davies-Bouldin Index</strong>: Lower values indicate
+              better clustering
+            </li>
+            <li class="fragment">
+              <strong>Calinski-Harabasz Index</strong>: Higher values indicate
+              better defined clusters
+            </li>
+            <li class="fragment">
+              <strong>Dunn Index</strong>: Ratio of minimum inter-cluster to
+              maximum intra-cluster distance
+            </li>
+          </ul>
+          <div class="formula-box fragment">
+            <h4>Silhouette Score Formula:</h4>
+            <p>s(i) = (b(i) - a(i)) / max(a(i), b(i))</p>
+            <p>
+              <small>Where a(i) = avg distance to same cluster, b(i) = avg
+                distance to nearest cluster</small>
             </p>
-          </section>
+          </div>
+        </section>
 
-          <section>
-            <h2>Customer Segmentation Example</h2>
-            <div class="code-example">
-              <pre><code class="python">
+        <section>
+          <h2>DBSCAN Quality Assessment</h2>
+          <div class="chart-container">
+            <img
+              src="https://ppl-ai-code-interpreter-files.s3.amazonaws.com/web/direct-files/90f8f9d183ad3da102ef2390770398ef/419b8577-86c5-4b7e-984b-9714fac909a5/2272bfe5.png"
+              alt="DBSCAN Performance Radar Chart" class="chart-image" />
+          </div>
+          <p class="fragment">
+            Multi-dimensional view of DBSCAN performance across various
+            metrics
+          </p>
+        </section>
+      </section>
+
+      <!-- Slides 21-23: Case Study & Code Examples -->
+      <section>
+        <section class="section-title">
+          <h1>Case Study & Code Examples</h1>
+          <p class="section-subtitle">
+            Practical implementation and applications
+          </p>
+        </section>
+
+        <section>
+          <h2>Customer Segmentation Example</h2>
+          <div class="code-example">
+            <pre><code class="python">
 import numpy as np
 from sklearn.cluster import DBSCAN
 from sklearn.preprocessing import StandardScaler
@@ -599,13 +545,13 @@ if n_clusters > 1:
     silhouette_avg = silhouette_score(X_scaled, labels)
     print(f'Average silhouette score: {silhouette_avg:.3f}')
                         </code></pre>
-            </div>
-          </section>
+          </div>
+        </section>
 
-          <section>
-            <h2>Parameter Optimization</h2>
-            <div class="code-example">
-              <pre><code class="python">
+        <section>
+          <h2>Parameter Optimization</h2>
+          <div class="code-example">
+            <pre><code class="python">
 from sklearn.neighbors import NearestNeighbors
 import matplotlib.pyplot as plt
 
@@ -637,121 +583,151 @@ def find_optimal_eps(X, min_samples):
 optimal_eps = find_optimal_eps(X_scaled, min_samples=5)
 print(f'Optimal eps: {optimal_eps:.3f}')
                         </code></pre>
-            </div>
-          </section>
-
-          <section>
-            <h2>Real-world Applications</h2>
-            <div class="applications-grid">
-              <div class="app-box fragment">
-                <h3>Anomaly Detection</h3>
-                <p>Identifying outliers in network traffic, fraud detection</p>
-              </div>
-              <div class="app-box fragment">
-                <h3>Image Segmentation</h3>
-                <p>Grouping pixels based on color and spatial proximity</p>
-              </div>
-              <div class="app-box fragment">
-                <h3>Market Research</h3>
-                <p>Customer segmentation based on purchasing behavior</p>
-              </div>
-              <div class="app-box fragment">
-                <h3>Geospatial Analysis</h3>
-                <p>Identifying hotspots in geographical data</p>
-              </div>
-            </div>
-          </section>
+          </div>
         </section>
 
-        <!-- Slide 24: Visual Comparisons & Summary -->
         <section>
-          <h2>Visual Comparisons & Summary</h2>
-          <div class="summary-grid">
-            <div class="summary-section">
-              <h3>Algorithm Performance</h3>
-              <ul class="fragment">
-                <li>HDBSCAN performs best for varying densities</li>
-                <li>DBSCAN optimal for uniform density clusters</li>
-                <li>
-                  OPTICS provides flexibility but requires more interpretation
-                </li>
-              </ul>
+          <h2>Real-world Applications</h2>
+          <div class="applications-grid">
+            <div class="app-box fragment">
+              <h3>Anomaly Detection</h3>
+              <p>Identifying outliers in network traffic, fraud detection</p>
             </div>
-            <div class="summary-section">
-              <h3>Key Insights</h3>
-              <ul class="fragment">
-                <li>Parameter selection is crucial for DBSCAN success</li>
-                <li>Hopkins statistic helps assess clustering tendency</li>
-                <li>Multiple metrics needed for comprehensive evaluation</li>
-                <li>Visual validation complements quantitative metrics</li>
-              </ul>
+            <div class="app-box fragment">
+              <h3>Image Segmentation</h3>
+              <p>Grouping pixels based on color and spatial proximity</p>
+            </div>
+            <div class="app-box fragment">
+              <h3>Market Research</h3>
+              <p>Customer segmentation based on purchasing behavior</p>
+            </div>
+            <div class="app-box fragment">
+              <h3>Geospatial Analysis</h3>
+              <p>Identifying hotspots in geographical data</p>
             </div>
           </div>
-          <div class="best-practices fragment">
-            <h3>Best Practices</h3>
-            <ol>
+        </section>
+      </section>
+
+      <!-- Slide 24: Visual Comparisons & Summary -->
+      <section>
+        <h2>Visual Comparisons & Summary</h2>
+        <div class="summary-grid">
+          <div class="summary-section">
+            <h3>Algorithm Performance</h3>
+            <ul class="fragment">
+              <li>HDBSCAN performs best for varying densities</li>
+              <li>DBSCAN optimal for uniform density clusters</li>
               <li>
-                Always assess clustering tendency before applying algorithms
+                OPTICS provides flexibility but requires more interpretation
               </li>
-              <li>Use multiple validation metrics for robust evaluation</li>
-              <li>Consider data preprocessing and scaling</li>
-              <li>Visualize results when possible</li>
-              <li>Compare multiple algorithms on your specific dataset</li>
-            </ol>
+            </ul>
           </div>
-        </section>
+          <div class="summary-section">
+            <h3>Key Insights</h3>
+            <ul class="fragment">
+              <li>Parameter selection is crucial for DBSCAN success</li>
+              <li>Hopkins statistic helps assess clustering tendency</li>
+              <li>Multiple metrics needed for comprehensive evaluation</li>
+              <li>Visual validation complements quantitative metrics</li>
+            </ul>
+          </div>
+        </div>
+        <div class="best-practices fragment">
+          <h3>Best Practices</h3>
+          <ol>
+            <li>
+              Always assess clustering tendency before applying algorithms
+            </li>
+            <li>Use multiple validation metrics for robust evaluation</li>
+            <li>Consider data preprocessing and scaling</li>
+            <li>Visualize results when possible</li>
+            <li>Compare multiple algorithms on your specific dataset</li>
+          </ol>
+        </div>
+      </section>
 
-        <!-- Slide 25: Conclusions & Q&A -->
-        <section class="conclusion-slide">
-          <h2>Conclusions & Q&A</h2>
-          <div class="conclusions">
-            <div class="conclusion-points fragment">
-              <h3>Key Takeaways</h3>
-              <ul>
-                <li>
-                  DBSCAN family algorithms excel at finding arbitrary-shaped
-                  clusters
-                </li>
-                <li>
-                  Each method has specific strengths for different scenarios
-                </li>
-                <li>Proper parameter tuning and validation are essential</li>
-                <li>
-                  Combining multiple evaluation approaches provides robust
-                  results
-                </li>
-              </ul>
-            </div>
-            <div class="future-work fragment">
-              <h3>Future Directions</h3>
-              <ul>
-                <li>Adaptive parameter selection methods</li>
-                <li>Integration with deep learning approaches</li>
-                <li>Scalability improvements for big data</li>
-                <li>Multi-view clustering applications</li>
-              </ul>
-            </div>
+      <!-- Slide 25: Conclusions & Q&A -->
+      <!-- Slide 25: Conclusions & Q&A -->
+      <section class="conclusion-slide">
+        <h2>Conclusions & Q&A</h2>
+        <div class="conclusions">
+          <div class="conclusion-points fragment">
+            <h3>Key Takeaways</h3>
+            <ul>
+              <li>DBSCAN family algorithms excel at finding arbitrary-shaped clusters</li>
+              <li>Each method has specific strengths for different scenarios</li>
+              <li>Proper parameter tuning and validation are essential</li>
+              <li>Combining multiple evaluation approaches provides robust results</li>
+            </ul>
           </div>
-          <div class="qa-section fragment">
-            <h2 class="qa-title">Questions & Discussion</h2>
-            <p class="qa-prompt">Thank you for your attention!</p>
+          <div class="future-work fragment">
+            <h3>Future Directions</h3>
+            <ul>
+              <li>Adaptive parameter selection methods</li>
+              <li>Integration with deep learning approaches</li>
+              <li>Scalability improvements for big data</li>
+              <li>Multi-view clustering applications</li>
+            </ul>
           </div>
-        </section>
-      </div>
+        </div>
+      </section>
 
-      <!-- Progress bar -->
-      <div class="progress">
-        <span></span>
-      </div>
+      <!-- Slide 26: Detailed Conclusion -->
+      <section>
+        <h2>Detailed Conclusion</h2>
+        <p>
+          To summarize, we explored <strong>DBSCAN</strong>, a powerful density-based clustering algorithm known for
+          its ability to detect arbitrarily shaped clusters and filter noise without requiring the number of clusters
+          upfront.
+        </p>
+        <p>
+          We built intuition around its core parameters — <code>epsilon</code> and <code>minPts</code>, and how they
+          guide the clustering process.
+        </p>
+        <p>
+          We compared DBSCAN with other density-based methods like <strong>OPTICS</strong> and
+          <strong>HDBSCAN</strong>, highlighting trade-offs in complexity and performance.
+        </p>
+        <p>
+          Through a relative merits comparison, we saw where DBSCAN excels — especially in handling noisy and unevenly
+          distributed data — and where it may fall short.
+        </p>
+        <p>
+          We also evaluated clustering tendency, helping determine whether a dataset is even clusterable. Following
+          that, we dove into quality metrics analysis, using internal and external evaluation scores to judge
+          clustering performance objectively.
+        </p>
+        <p>
+          Real-world applicability was shown through case studies and code examples, reinforcing theoretical concepts
+          with practical implementation.
+        </p>
+        <p>
+          Finally, visual comparisons and summaries tied everything together, offering a side-by-side look at DBSCAN
+          vs. others across different datasets.
+        </p>
+        <p>
+          <strong>In essence</strong>, DBSCAN remains a go-to method when dealing with spatial, noisy, or complex
+          datasets where traditional methods may fail — making it a valuable tool in the data science arsenal.
+        </p>
+      </section>
+
     </div>
 
-    <!-- Reveal.js JavaScript -->
-    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/highlight/highlight.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/zoom/zoom.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/notes/notes.js"></script>
+    <!-- Progress bar -->
+    <div class="progress">
+      <span></span>
+    </div>
+  </div>
 
-    <!-- Custom JavaScript -->
-    <script src="app.js"></script>
-  </body>
+  <!-- Reveal.js JavaScript -->
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/highlight/highlight.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/zoom/zoom.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/notes/notes.js"></script>
+
+  <!-- Custom JavaScript -->
+  <script src="app.js"></script>
+</body>
+
 </html>
