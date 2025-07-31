@@ -118,17 +118,22 @@
       <!-- Slide 2: Agenda -->
       <section class="agenda-slide">
         <h2>Agenda</h2>
-        <ul class="agenda-list">
-          <li class="fragment">Introduction to DBSCAN</li>
-          <li class="fragment">DBSCAN Parameters & Intuition</li>
-          <li class="fragment">Alternative Density-Based Methods</li>
-          <li class="fragment">Relative Merits Comparison</li>
-          <li class="fragment">Clustering Tendency Assessment</li>
-          <li class="fragment">Quality Metrics Analysis</li>
-          <li class="fragment">Case Study & Code Examples</li>
-          <li class="fragment">Visual Comparisons & Summary</li>
-          <li class="fragment">Conclusions</li>
-        </ul>
+        <div class="agenda-content">
+          <ul class="agenda-list">
+            <li class="fragment">Introduction to DBSCAN</li>
+            <li class="fragment">DBSCAN Parameters & Intuition</li>
+            <li class="fragment">Alternative Density-Based Methods</li>
+            <li class="fragment">Relative Merits Comparison</li>
+            <li class="fragment">Clustering Tendency Assessment</li>
+            <li class="fragment">Quality Metrics Analysis</li>
+            <li class="fragment">Case Study & Code Examples</li>
+            <li class="fragment">Visual Comparisons & Summary</li>
+            <li class="fragment">Conclusions</li>
+          </ul>
+          <div class="agenda-qr">
+            <img src="qr.jpg" alt="QR Code" class="qr-code" />
+          </div>
+        </div>
       </section>
 
       <!-- Slides 3-5: Introduction to DBSCAN -->
@@ -727,137 +732,207 @@ print(f'Estimated number of noise points: {n_noise_}')
       </section>
 
         <!-- Slide 25: Conclusions & Q&A -->
+        <section>
+          <section class="section-title">
+            <h1>Conclusions & Key Takeaways</h1>
+            <p class="section-subtitle">DBSCAN in the Clustering Landscape</p>
+            <div class="conclusion-visual" style="margin-top: 2rem;">
+              <img src="dbscan_clustering.png" alt="DBSCAN Clustering Summary" style="max-width: 70%; height: auto; border-radius: 10px; box-shadow: 0 4px 20px rgba(0,255,255,0.3);" />
+            </div>
+          </section>
+
+          <section>
+            <h2>🎯 Key Conclusions</h2>
+            <div class="conclusions-grid">
+              <div class="conclusion-category fragment">
+                <h3>Algorithm Strengths</h3>
+                <div class="conclusion-points">
+                  <div class="point">
+                    <span class="point-icon">🔍</span>
+                    <p><strong>Discovers Hidden Patterns:</strong> Identifies arbitrarily shaped clusters without predefined cluster count</p>
+                  </div>
+                  <div class="point">
+                    <span class="point-icon">🛡️</span>
+                    <p><strong>Robust to Noise:</strong> Automatically identifies and isolates outliers as noise points</p>
+                  </div>
+                  <div class="point">
+                    <span class="point-icon">⚡</span>
+                    <p><strong>Computational Efficiency:</strong> O(n log n) complexity with proper indexing makes it scalable</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="conclusion-category fragment">
+                <h3>Critical Success Factors</h3>
+                <div class="conclusion-points">
+                  <div class="point">
+                    <span class="point-icon">🎛️</span>
+                    <p><strong>Parameter Tuning:</strong> Epsilon (ε) and min_samples require careful selection using domain knowledge</p>
+                  </div>
+                  <div class="point">
+                    <span class="point-icon">📊</span>
+                    <p><strong>Data Preparation:</strong> Feature scaling and dimensionality considerations significantly impact performance</p>
+                  </div>
+                  <div class="point">
+                    <span class="point-icon">📈</span>
+                    <p><strong>Validation Strategy:</strong> Multiple metrics (Silhouette, Davies-Bouldin) provide comprehensive evaluation</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2>🔬 Research Insights Summary</h2>
+            <div class="research-summary">
+              <div class="insight-row fragment">
+                <h3>Comparative Performance</h3>
+                <div class="performance-insights">
+                  <div class="perf-item">
+                    <span class="algorithm-tag dbscan">DBSCAN</span>
+                    <p>Best for uniform density, interpretable parameters, real-time applications</p>
+                  </div>
+                  <div class="perf-item">
+                    <span class="algorithm-tag hdbscan">HDBSCAN</span>
+                    <p>Superior for varying densities, automatic parameter selection, complex datasets</p>
+                  </div>
+                  <div class="perf-item">
+                    <span class="algorithm-tag optics">OPTICS</span>
+                    <p>Optimal for exploratory analysis, hierarchical structures, density visualization</p>
+                  </div>
+                </div>
+              </div>
+
+              <div class="insight-row fragment">
+                <h3>Quality Assessment Framework</h3>
+                <div class="quality-insights">
+                  <div class="quality-metric">
+                    <h4>Internal Validation</h4>
+                    <p>Silhouette Score (0.3-0.7 indicates good clustering), Davies-Bouldin Index (&lt;1.0 preferred)</p>
+                  </div>
+                  <div class="quality-metric">
+                    <h4>Clustering Tendency</h4>
+                    <p>Hopkins Statistic (H &gt; 0.75 suggests strong clustering tendency)</p>
+                  </div>
+                  <div class="quality-metric">
+                    <h4>Visual Validation</h4>
+                    <p>Essential for parameter tuning and result interpretation</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2>❓ Questions & Answers</h2>
+            <div class="qa-section">
+              <div class="qa-item fragment">
+                <h3 class="question">Q: How do I choose the optimal ε (epsilon) value?</h3>
+                <div class="answer">
+                  <p><strong>A:</strong> Use the k-distance graph method:</p>
+                  <ul>
+                    <li>Plot k-nearest neighbor distances in ascending order</li>
+                    <li>Look for the "elbow" or sharp bend in the curve</li>
+                    <li>The y-coordinate of this point suggests optimal ε</li>
+                    <li>Cross-validate with domain knowledge and clustering metrics</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="qa-item fragment">
+                <h3 class="question">Q: What's the difference between noise and outliers in DBSCAN?</h3>
+                <div class="answer">
+                  <p><strong>A:</strong> In DBSCAN context, they're synonymous:</p>
+                  <ul>
+                    <li><strong>Noise points:</strong> Points that don't belong to any cluster (labeled as -1)</li>
+                    <li>These represent genuine outliers or anomalies in the data</li>
+                    <li>Can be valuable for anomaly detection applications</li>
+                    <li>Not necessarily "bad" data - often the most interesting findings</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="qa-item fragment">
+                <h3 class="question">Q: When should I choose HDBSCAN over DBSCAN?</h3>
+                <div class="answer">
+                  <p><strong>A:</strong> Consider HDBSCAN when:</p>
+                  <ul>
+                    <li>Clusters have significantly different densities</li>
+                    <li>You want more robust parameter selection</li>
+                    <li>Hierarchical cluster structure is valuable</li>
+                    <li>Dataset is complex with nested or varying-density clusters</li>
+                    <li>Computational cost is less critical than quality</li>
+                  </ul>
+                </div>
+              </div>
+
+              <div class="qa-item fragment">
+                <h3 class="question">Q: How does DBSCAN handle high-dimensional data?</h3>
+                <div class="answer">
+                  <p><strong>A:</strong> High dimensions pose challenges:</p>
+                  <ul>
+                    <li><strong>Curse of dimensionality:</strong> Distance metrics become less meaningful</li>
+                    <li><strong>Solution:</strong> Apply dimensionality reduction (PCA, t-SNE, UMAP) first</li>
+                    <li>Consider feature selection to retain most relevant dimensions</li>
+                    <li>Use domain expertise to identify important features</li>
+                    <li>Alternative: Use specialized high-dimensional clustering methods</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section>
+            <h2>🚀 Future Directions & Final Thoughts</h2>
+            <div class="future-directions">
+              <div class="direction-category fragment">
+                <h3>Emerging Trends</h3>
+                <ul>
+                  <li><strong>GPU Acceleration:</strong> RAPIDS cuML for massive datasets</li>
+                  <li><strong>Streaming DBSCAN:</strong> Real-time clustering for dynamic data</li>
+                  <li><strong>Deep Learning Integration:</strong> Learned distance metrics and embeddings</li>
+                  <li><strong>Federated Clustering:</strong> Privacy-preserving distributed DBSCAN</li>
+                </ul>
+              </div>
+
+              <div class="direction-category fragment">
+                <h3>Best Practices Recap</h3>
+                <div class="practices-final">
+                  <div class="practice-group">
+                    <h4>Before Clustering</h4>
+                    <p>✓ Assess clustering tendency<br>✓ Preprocess and scale data<br>✓ Understand domain context</p>
+                  </div>
+                  <div class="practice-group">
+                    <h4>During Implementation</h4>
+                    <p>✓ Use systematic parameter selection<br>✓ Apply multiple validation metrics<br>✓ Visualize intermediate results</p>
+                  </div>
+                  <div class="practice-group">
+                    <h4>After Analysis</h4>
+                    <p>✓ Validate with domain experts<br>✓ Test stability across parameters<br>✓ Document assumptions and limitations</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="final-message fragment">
+              <h3>🎯 Take-Home Message</h3>
+              <div class="message-box">
+                <p><strong>DBSCAN is not just a clustering algorithm—it's a powerful tool for understanding data structure, identifying patterns, and discovering anomalies. Its success depends on thoughtful parameter selection, proper data preparation, and comprehensive validation.</strong></p>
+                <p class="emphasis">When applied correctly, DBSCAN reveals hidden insights that traditional clustering methods might miss.</p>
+              </div>
+            </div>
+
+            <div class="thank-you fragment">
+              <h2 style="color: var(--primary-neon); margin-top: 2rem;">Thank You!</h2>
+              <p style="font-size: 1.2rem; margin-top: 1rem;">Questions & Discussion</p>
+              <p style="font-size: 0.9rem; color: #ccc; margin-top: 1rem;">
+                Group Members: Atharv Sathe • Ayush Pandey • Harsh Markandey • Meet Bhikani • Manvendra Pratap Singh
+              </p>
+            </div>
+          </section>
+        </section>
         
-        <!-- Slide 26: Key Research Insights -->
-        <section>
-          <h2>Key Research Insights</h2>
-          <div class="insights-container">
-            <div class="insight-category fragment">
-              <h3>Algorithm Performance</h3>
-              <div class="insight-grid">
-                <div class="insight-item">
-                  <h4>DBSCAN Strengths</h4>
-                  <ul>
-                    <li>✓ No need to specify cluster count</li>
-                    <li>✓ Robust to noise and outliers</li>
-                    <li>✓ Finds arbitrary-shaped clusters</li>
-                    <li>✓ Computationally efficient O(n log n)</li>
-                  </ul>
-                </div>
-                <div class="insight-item">
-                  <h4>Critical Success Factors</h4>
-                  <ul>
-                    <li>⚡ Proper epsilon (ε) selection</li>
-                    <li>⚡ Appropriate min_samples value</li>
-                    <li>⚡ Data preprocessing and scaling</li>
-                    <li>⚡ Domain knowledge integration</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            
-            <div class="insight-category fragment">
-              <h3>Comparative Analysis Results</h3>
-              <div class="comparison-insights">
-                <div class="method-insight">
-                  <span class="method-badge dbscan">DBSCAN</span>
-                  <p><strong>Best for:</strong> Uniform density clusters, fast processing, clear parameter interpretation</p>
-                </div>
-                <div class="method-insight">
-                  <span class="method-badge optics">OPTICS</span>
-                  <p><strong>Best for:</strong> Varying density clusters, hierarchical analysis, exploratory data analysis</p>
-                </div>
-                <div class="method-insight">
-                  <span class="method-badge hdbscan">HDBSCAN</span>
-                  <p><strong>Best for:</strong> Complex datasets, automatic parameter selection, stability requirements</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        <!-- Slide 27: Practical Implementation Guide -->
-        <section>
-          <h2>Practical Implementation Guide</h2>
-          <div class="implementation-guide">
-            <div class="guide-section fragment">
-              <h3>📊 When to Use DBSCAN</h3>
-              <div class="use-case-grid">
-                <div class="use-case">
-                  <h4>✅ Ideal Scenarios</h4>
-                  <ul>
-                    <li>Non-spherical cluster shapes</li>
-                    <li>Unknown number of clusters</li>
-                    <li>Presence of noise/outliers</li>
-                    <li>Spatial or geographic data</li>
-                    <li>Anomaly detection tasks</li>
-                  </ul>
-                </div>
-                <div class="use-case">
-                  <h4>❌ Avoid When</h4>
-                  <ul>
-                    <li>Varying cluster densities</li>
-                    <li>High-dimensional data (curse of dimensionality)</li>
-                    <li>Very large datasets without optimization</li>
-                    <li>All points are equally important</li>
-                    <li>Spherical clusters work well</li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-
-            <div class="guide-section fragment">
-              <h3>🔧 Implementation Best Practices</h3>
-              <div class="best-practices-grid">
-                <div class="practice-category">
-                  <h4>Data Preparation</h4>
-                  <ol>
-                    <li>Standardize/normalize features</li>
-                    <li>Handle missing values appropriately</li>
-                    <li>Consider dimensionality reduction</li>
-                    <li>Assess clustering tendency (Hopkins statistic)</li>
-                  </ol>
-                </div>
-                <div class="practice-category">
-                  <h4>Parameter Selection</h4>
-                  <ol>
-                    <li>Use k-distance graph for ε selection</li>
-                    <li>Set min_samples ≥ dimensions + 1</li>
-                    <li>Cross-validate with different metrics</li>
-                    <li>Consider domain expertise</li>
-                  </ol>
-                </div>
-                <div class="practice-category">
-                  <h4>Validation Strategy</h4>
-                  <ol>
-                    <li>Multiple internal validation metrics</li>
-                    <li>Visual inspection of results</li>
-                    <li>Stability analysis across parameters</li>
-                    <li>Business/domain validation</li>
-                  </ol>
-                </div>
-              </div>
-            </div>
-
-            <div class="guide-section fragment">
-              <h3>📈 Quality Assessment Framework</h3>
-              <div class="quality-framework">
-                <div class="metric-tier">
-                  <h4>Primary Metrics</h4>
-                  <span class="metric-list">Silhouette Score • Davies-Bouldin Index • Calinski-Harabasz Index</span>
-                </div>
-                <div class="metric-tier">
-                  <h4>Secondary Metrics</h4>
-                  <span class="metric-list">Dunn Index • DBCV • Adjusted Rand Index (if ground truth available)</span>
-                </div>
-                <div class="metric-tier">
-                  <h4>Domain-Specific</h4>
-                  <span class="metric-list">Business KPIs • Expert Evaluation • Interpretability Measures</span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
+       
       </div>
 
     <!-- Progress bar -->
