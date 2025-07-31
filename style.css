@@ -162,7 +162,7 @@
     --color-bg-6: rgba(194, 65, 12, 0.15); /* Dark orange */
     --color-bg-7: rgba(190, 24, 93, 0.15); /* Dark pink */
     --color-bg-8: rgba(8, 145, 178, 0.15); /* Dark cyan */
-    
+
     /* Semantic Color Tokens (Dark Mode) */
     --color-background: var(--color-charcoal-700);
     --color-surface: var(--color-charcoal-800);
@@ -222,7 +222,7 @@
   --color-bg-6: rgba(194, 65, 12, 0.15); /* Dark orange */
   --color-bg-7: rgba(190, 24, 93, 0.15); /* Dark pink */
   --color-bg-8: rgba(8, 145, 178, 0.15); /* Dark cyan */
-  
+
   /* Semantic Color Tokens (Dark Mode) */
   --color-background: var(--color-charcoal-700);
   --color-surface: var(--color-charcoal-800);
@@ -268,7 +268,7 @@
   --color-brown-600-rgb: 94, 82, 64;
   --color-teal-500-rgb: 33, 128, 141;
   --color-slate-900-rgb: 19, 52, 59;
-  
+
   /* Semantic Color Tokens (Light Mode) */
   --color-background: var(--color-cream-50);
   --color-surface: var(--color-cream-100);
@@ -732,9 +732,9 @@ select.form-control {
 }
 
 @font-face {
-  font-family: 'FKGroteskNeue';
-  src: url('https://r2cdn.perplexity.ai/fonts/FKGroteskNeue.woff2')
-    format('woff2');
+  font-family: "FKGroteskNeue";
+  src: url("https://r2cdn.perplexity.ai/fonts/FKGroteskNeue.woff2")
+    format("woff2");
 }
 
 /* END PERPLEXITY DESIGN SYSTEM */
@@ -760,8 +760,13 @@ select.form-control {
 
 /* Base overrides */
 .reveal {
-  font-family: 'Inter', sans-serif;
-  background: linear-gradient(135deg, var(--dark-bg) 0%, #1a1a2e 50%, #16213e 100%);
+  font-family: "Inter", sans-serif;
+  background: linear-gradient(
+    135deg,
+    var(--dark-bg) 0%,
+    #1a1a2e 50%,
+    #16213e 100%
+  );
   color: var(--text-primary);
 }
 
@@ -778,7 +783,10 @@ select.form-control {
 }
 
 /* Typography */
-.reveal h1, .reveal h2, .reveal h3, .reveal h4 {
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4 {
   color: var(--text-primary);
   font-weight: 600;
   text-shadow: 0 0 10px rgba(0, 255, 255, 0.3);
@@ -804,7 +812,8 @@ select.form-control {
   color: var(--accent-teal);
 }
 
-.reveal p, .reveal li {
+.reveal p,
+.reveal li {
   color: var(--text-secondary);
   font-size: 1.1rem;
   line-height: 1.6;
@@ -825,7 +834,11 @@ select.form-control {
 /* Title Slide */
 .title-slide {
   text-align: center;
-  background: radial-gradient(circle at center, rgba(0, 255, 255, 0.1) 0%, transparent 70%);
+  background: radial-gradient(
+    circle at center,
+    rgba(0, 255, 255, 0.1) 0%,
+    transparent 70%
+  );
 }
 
 .main-title {
@@ -847,15 +860,54 @@ select.form-control {
   margin-top: 3rem;
 }
 
-.author, .date {
+.group-members {
+  background: rgba(0, 255, 255, 0.05);
+  border: 1px solid rgba(0, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 1rem;
+  margin: 1rem auto;
+  backdrop-filter: blur(10px);
+}
+
+.member {
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  margin: 0.8rem 0;
+  padding: 0.5rem 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: color 0.3s ease;
+}
+
+.member:last-child {
+  border-bottom: none;
+}
+
+.member:hover {
+  color: var(--primary-neon);
+}
+
+.course-info {
+  color: var(--accent-teal);
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.author,
+.date {
   font-size: 1.2rem;
   color: var(--accent-teal);
   margin: 0.5rem 0;
 }
 
 @keyframes glow-pulse {
-  0% { text-shadow: 0 0 20px rgba(0, 255, 255, 0.5); }
-  100% { text-shadow: 0 0 30px rgba(0, 255, 255, 0.8), 0 0 40px rgba(0, 255, 255, 0.3); }
+  0% {
+    text-shadow: 0 0 20px rgba(0, 255, 255, 0.5);
+  }
+  100% {
+    text-shadow: 0 0 30px rgba(0, 255, 255, 0.8),
+      0 0 40px rgba(0, 255, 255, 0.3);
+  }
 }
 
 /* Agenda Slide */
@@ -893,13 +945,17 @@ select.form-control {
 }
 
 .section-title::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 0;
   left: 0;
   right: 0;
   bottom: 0;
-  background: radial-gradient(circle at center, rgba(255, 0, 255, 0.1) 0%, transparent 70%);
+  background: radial-gradient(
+    circle at center,
+    rgba(255, 0, 255, 0.1) 0%,
+    transparent 70%
+  );
   z-index: -1;
 }
 
@@ -911,14 +967,18 @@ select.form-control {
 }
 
 /* Content Layouts */
-.concepts-grid, .parameters-grid, .applications-grid {
+.concepts-grid,
+.parameters-grid,
+.applications-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
   gap: 2rem;
   margin: 2rem 0;
 }
 
-.concept-box, .parameter-box, .app-box {
+.concept-box,
+.parameter-box,
+.app-box {
   background: var(--card-bg);
   padding: 1.5rem;
   border-radius: 12px;
@@ -928,12 +988,16 @@ select.form-control {
   transition: all 0.3s ease;
 }
 
-.concept-box:hover, .parameter-box:hover, .app-box:hover {
+.concept-box:hover,
+.parameter-box:hover,
+.app-box:hover {
   transform: translateY(-5px);
   box-shadow: 0 10px 40px rgba(0, 255, 255, 0.4);
 }
 
-.concept-box h3, .parameter-box h3, .app-box h3 {
+.concept-box h3,
+.parameter-box h3,
+.app-box h3 {
   color: var(--primary-neon);
   margin-bottom: 1rem;
   font-size: 1.4rem;
@@ -960,19 +1024,22 @@ select.form-control {
 }
 
 .algorithm-description li::before {
-  content: '▶';
+  content: "▶";
   position: absolute;
   left: 0;
   color: var(--accent-teal);
 }
 
 /* Images and Charts */
-.image-container, .chart-container {
+.image-container,
+.chart-container {
   text-align: center;
   margin: 2rem 0;
 }
 
-.chart-image, .method-comparison, .validation-plot {
+.chart-image,
+.method-comparison,
+.validation-plot {
   max-width: 100%;
   height: auto;
   border-radius: 12px;
@@ -1009,7 +1076,7 @@ select.form-control {
 }
 
 .code-example code {
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 0.9rem;
   line-height: 1.4;
   color: #e6e6e6;
@@ -1085,7 +1152,7 @@ select.form-control {
 }
 
 .formula-box p {
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   font-size: 1.2rem;
   color: var(--text-primary);
   margin: 0.5rem 0;
@@ -1149,7 +1216,8 @@ select.form-control {
   margin: 2rem 0;
 }
 
-.conclusion-points, .future-work {
+.conclusion-points,
+.future-work {
   background: var(--card-bg);
   padding: 1.5rem;
   border-radius: 12px;
@@ -1168,7 +1236,11 @@ select.form-control {
 .qa-section {
   margin-top: 3rem;
   padding: 2rem;
-  background: radial-gradient(circle, rgba(0, 255, 255, 0.1) 0%, transparent 70%);
+  background: radial-gradient(
+    circle,
+    rgba(0, 255, 255, 0.1) 0%,
+    transparent 70%
+  );
   border-radius: 20px;
 }
 
@@ -1243,41 +1315,44 @@ select.form-control {
   .reveal h1 {
     font-size: 3rem !important;
   }
-  
+
   .reveal h2 {
     font-size: 2rem !important;
   }
-  
+
   .main-title {
     font-size: 3.5rem !important;
   }
-  
+
   .subtitle {
     font-size: 1.5rem !important;
   }
-  
-  .concepts-grid, .parameters-grid, .applications-grid,
-  .summary-grid, .conclusions {
+
+  .concepts-grid,
+  .parameters-grid,
+  .applications-grid,
+  .summary-grid,
+  .conclusions {
     grid-template-columns: 1fr;
     gap: 1rem;
   }
-  
+
   .algorithm-info {
     grid-template-columns: 1fr;
   }
-  
+
   .visual-techniques {
     grid-template-columns: 1fr;
   }
-  
+
   .reveal .slides section {
     padding: 1rem;
   }
-  
+
   .code-example pre {
     padding: 1rem;
   }
-  
+
   .code-example code {
     font-size: 0.8rem;
   }
@@ -1355,12 +1430,14 @@ select.form-control {
     background: white !important;
     color: black !important;
   }
-  
-  .reveal h1, .reveal h2, .reveal h3 {
+
+  .reveal h1,
+  .reveal h2,
+  .reveal h3 {
     color: black !important;
     text-shadow: none !important;
   }
-  
+
   .card-bg {
     background: #f5f5f5 !important;
     border: 1px solid #ccc !important;

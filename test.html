@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>DBSCAN Chart Test</title>
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+  </head>
+  <body style="background: #222; color: white">
+    <h1>DBSCAN Chart Test</h1>
+    <div id="test-chart" style="height: 400px; border: 1px solid white"></div>
+
+    <div>
+      <label
+        >Epsilon:
+        <input type="range" id="eps" min="0.1" max="3" step="0.1" value="1.0"
+      /></label>
+      <span id="eps-val">1.0</span>
+    </div>
+    <div>
+      <label
+        >Min Samples:
+        <input type="range" id="min" min="1" max="10" step="1" value="3"
+      /></label>
+      <span id="min-val">3</span>
+    </div>
+
+    <script>
+      // Simple DBSCAN implementation
+      function dbscan(points, eps, minPts) {
+        const clusters = [];
+        const visited = new Set();
+        const noise = new Set();
+
+        function distance(p1, p2) {
+          return Math.sqrt(
+            Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2)
+          );
+        }
+
+        function regionQuery(pointIdx) {
+          const neighbors = [];
+          for (let i = 0; i < points.length; i++) {
+            if (distance(points[pointIdx], points[i]) <= eps) {
+              neighbors.push(i);
+            }
+          }
+          return neighbors;
+        }
+
+        function expandCluster(pointIdx, neighbors, clusterId) {
+          clusters[pointIdx] = clusterId;
+
+          for (let i = 0; i < neighbors.length; i++) {
+            const neighborIdx = neighbors[i];
+
+            if (!visited.has(neighborIdx)) {
+              visited.add(neighborIdx);
+              const neighborNeighbors = regionQuery(neighborIdx);
+
+              if (neighborNeighbors.length >= minPts) {
+                neighbors = neighbors.concat(neighborNeighbors);
+              }
+            }
+
+            if (clusters[neighborIdx] === undefined) {
+              clusters[neighborIdx] = clusterId;
+            }
+          }
+        }
+
+        let clusterId = 0;
+
+        for (let i = 0; i < points.length; i++) {
+          if (visited.has(i)) continue;
+
+          visited.add(i);
+          const neighbors = regionQuery(i);
+
+          if (neighbors.length < minPts) {
+            noise.add(i);
+            clusters[i] = -1; // Mark as noise
+          } else {
+            expandCluster(i, neighbors, clusterId);
+            clusterId++;
+          }
+        }
+
+        return clusters;
+      }
+
+      // Test data
+      const testData = [
+        // Cluster 1 (bottom-left)
+        [1, 1],
+        [1.5, 1],
+        [2, 1],
+        [1, 1.5],
+        [1.5, 1.5],
+        [2, 1.5],
+        [1, 2],
+        [1.5, 2],
+        [2, 2],
+        // Cluster 2 (top-right)
+        [7, 7],
+        [7.5, 7],
+        [8, 7],
+        [7, 7.5],
+        [7.5, 7.5],
+        [8, 7.5],
+        [7, 8],
+        [7.5, 8],
+        [8, 8],
+        // Cluster 3 (bottom-right)
+        [7, 1],
+        [7.5, 1],
+        [8, 1],
+        [7, 1.5],
+        [7.5, 1.5],
+        [8, 1.5],
+        [7, 2],
+        [7.5, 2],
+        // Some noise points
+        [4, 4],
+        [4.5, 9],
+        [0.5, 5],
+        [9.5, 4],
+        [3, 3],
+      ];
+
+      function updateChart() {
+        const eps = parseFloat(document.getElementById("eps").value);
+        const minSamples = parseInt(document.getElementById("min").value);
+        document.getElementById("eps-val").textContent = eps;
+        document.getElementById("min-val").textContent = minSamples;
+
+        console.log("Running DBSCAN with eps:", eps, "minSamples:", minSamples);
+
+        const clusters = dbscan(testData, eps, minSamples);
+        console.log("Clusters:", clusters);
+
+        const traces = [];
+        const uniqueClusters = [...new Set(clusters)];
+        const colors = ["#00ffff", "#ff00ff", "#00ff80", "#ffff00", "#ff8000"];
+
+        uniqueClusters.forEach((clusterId) => {
+          const points = { x: [], y: [] };
+          clusters.forEach((cluster, pointIndex) => {
+            if (cluster === clusterId) {
+              points.x.push(testData[pointIndex][0]);
+              points.y.push(testData[pointIndex][1]);
+            }
+          });
+
+          if (clusterId === -1) {
+            traces.push({
+              x: points.x,
+              y: points.y,
+              mode: "markers",
+              name: "Noise",
+              marker: { color: "rgba(204, 204, 204, 0.8)", size: 8 },
+            });
+          } else {
+            traces.push({
+              x: points.x,
+              y: points.y,
+              mode: "markers",
+              name: `Cluster ${clusterId + 1}`,
+              marker: { color: colors[clusterId % colors.length], size: 12 },
+            });
+          }
+        });
+
+        const layout = {
+          showlegend: true,
+          plot_bgcolor: "rgba(0,0,0,0)",
+          paper_bgcolor: "rgba(0,0,0,0)",
+          xaxis: {
+            title: "X",
+            color: "white",
+            gridcolor: "rgba(255,255,255,0.1)",
+            range: [-1, 10],
+          },
+          yaxis: {
+            title: "Y",
+            color: "white",
+            gridcolor: "rgba(255,255,255,0.1)",
+            range: [-1, 10],
+          },
+          legend: { font: { color: "white" } },
+        };
+
+        Plotly.react("test-chart", traces, layout, { responsive: true });
+      }
+
+      document.getElementById("eps").addEventListener("input", updateChart);
+      document.getElementById("min").addEventListener("input", updateChart);
+
+      // Initial chart
+      updateChart();
+    </script>
+  </body>
+</html>
