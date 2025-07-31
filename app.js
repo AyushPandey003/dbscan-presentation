@@ -679,115 +679,159 @@ function createInteractiveConceptsChart() {
 //
 // CHART 2: Live DBSCAN Parameter Demo
 //
+
 function createLiveDemoChart() {
-  console.log("createLiveDemoChart called");
   const epsilonSlider = document.getElementById("epsilon-slider");
   const minSamplesSlider = document.getElementById("minsamples-slider");
   const epsilonValue = document.getElementById("epsilon-value");
   const minSamplesValue = document.getElementById("minsamples-value");
 
-  console.log("Sliders found:", epsilonSlider, minSamplesSlider);
-  console.log("Value displays found:", epsilonValue, minSamplesValue);
+  // Adjust slider ranges for better demonstration
+  epsilonSlider.min = 0.5;
+  epsilonSlider.max = 5;
+  epsilonSlider.step = 0.1;
+  epsilonSlider.value = 1.5;
 
-  if (
-    !epsilonSlider ||
-    !minSamplesSlider ||
-    !epsilonValue ||
-    !minSamplesValue
-  ) {
-    console.error("Some demo chart elements not found");
-    return;
-  }
-
-  // Better synthetic data for the demo - more clearly separated clusters
+  // Spatially separated data to clearly show parameter effects
   const demoData = [
-    // Cluster 1 (bottom-left)
-    [1, 1],
-    [1.5, 1],
-    [2, 1],
-    [1, 1.5],
-    [1.5, 1.5],
-    [2, 1.5],
-    [1, 2],
-    [1.5, 2],
+    // Cluster 1 (Dense)
     [2, 2],
-    // Cluster 2 (top-right)
-    [7, 7],
-    [7.5, 7],
-    [8, 7],
-    [7, 7.5],
-    [7.5, 7.5],
-    [8, 7.5],
-    [7, 8],
-    [7.5, 8],
+    [2.5, 2.5],
+    [2, 3],
+    [3, 2],
+    [2.5, 1.5],
+    // Cluster 2 (Less Dense)
     [8, 8],
-    // Cluster 3 (bottom-right)
-    [7, 1],
-    [7.5, 1],
-    [8, 1],
-    [7, 1.5],
-    [7.5, 1.5],
-    [8, 1.5],
-    [7, 2],
-    [7.5, 2],
-    // Some noise points
-    [4, 4],
-    [4.5, 9],
-    [0.5, 5],
-    [9.5, 4],
-    [3, 3],
+    [7, 8.5],
+    [8, 9],
+    [9, 8],
+    // Cluster 3 (Elongated)
+    [2, 8],
+    [2.5, 8.5],
+    [3, 9],
+    [3.5, 9.5],
+    // A point that can be a bridge between clusters or noise
+    [5, 5],
+    // Obvious noise points
+    [1, 6],
+    [9, 1],
   ];
-  const clusterColors = ["#00ffff", "#ff00ff", "#00ff80", "#ffff00", "#ff8000"];
+  const clusterColors = ["#1FB8CD", "#2E8B57", "#DB4545", "#D2BA4C", "#9876AA"];
+
+  // Helper function to calculate distance
+  const distance = (p1, p2) =>
+    Math.sqrt(Math.pow(p1[0] - p2[0], 2) + Math.pow(p1[1] - p2[1], 2));
 
   function updateChart() {
-    console.log("updateChart called");
     const epsilon = parseFloat(epsilonSlider.value);
     const minSamples = parseInt(minSamplesSlider.value);
-    epsilonValue.textContent = epsilon;
+    epsilonValue.textContent = epsilon.toFixed(1);
     minSamplesValue.textContent = minSamples;
 
-    console.log(`Running DBSCAN with eps=${epsilon}, minSamples=${minSamples}`);
+    // --- Core Logic to Determine Point Types ---
 
-    // Run DBSCAN with our implementation
-    const clusters = dbscan(demoData, epsilon, minSamples);
-    console.log("DBSCAN result:", clusters);
+    // 1. Get initial cluster assignments from the library
+    const clusterAssignments = dbscan(demoData, epsilon, minSamples);
 
-    const traces = [];
-    const uniqueClusters = [...new Set(clusters)];
-    console.log("Unique clusters:", uniqueClusters);
-
-    uniqueClusters.forEach((clusterId) => {
-      const points = { x: [], y: [] };
-      clusters.forEach((cluster, pointIndex) => {
-        if (cluster === clusterId) {
-          points.x.push(demoData[pointIndex][0]);
-          points.y.push(demoData[pointIndex][1]);
+    // 2. Identify neighbors for each point
+    const neighbors = demoData.map((point1, i) => {
+      const pointNeighbors = [];
+      demoData.forEach((point2, j) => {
+        if (i !== j && distance(point1, point2) <= epsilon) {
+          pointNeighbors.push(j);
         }
       });
+      return pointNeighbors;
+    });
 
-      if (clusterId === -1) {
-        // Noise points
-        traces.push({
-          x: points.x,
-          y: points.y,
-          mode: "markers",
-          name: "Noise",
-          marker: { color: "rgba(204, 204, 204, 0.8)", size: 8 },
-        });
+    // 3. Classify each point as Core, Border, or Noise
+    const pointTypes = demoData.map((_, i) => {
+      if (clusterAssignments[i] === -1) {
+        return "Noise";
+      }
+      // A point is Core if it has at least minSamples neighbors
+      if (neighbors[i].length >= minSamples - 1) {
+        return "Core";
+      }
+      // Otherwise, it must be a Border point
+      return "Border";
+    });
+
+    // --- Plotting Logic ---
+    const corePoints = { x: [], y: [], text: [], colors: [] };
+    const borderPoints = {
+      x: [],
+      y: [],
+      text: [],
+      colors: [],
+      borderColors: [],
+    };
+    const noisePoints = { x: [], y: [], text: [] };
+
+    demoData.forEach((point, i) => {
+      const clusterId = clusterAssignments[i];
+      const type = pointTypes[i];
+      const color =
+        clusterId === -1
+          ? "grey"
+          : clusterColors[clusterId % clusterColors.length];
+
+      if (type === "Core") {
+        corePoints.x.push(point[0]);
+        corePoints.y.push(point[1]);
+        corePoints.text.push(`Core (Cluster ${clusterId + 1})`);
+        corePoints.colors.push(color);
+      } else if (type === "Border") {
+        borderPoints.x.push(point[0]);
+        borderPoints.y.push(point[1]);
+        borderPoints.text.push(`Border (Cluster ${clusterId + 1})`);
+        borderPoints.colors.push(
+          color.replace(")", ", 0.4)").replace("rgb", "rgba")
+        ); // Lighter fill
+        borderPoints.borderColors.push(color); // Solid border
       } else {
-        // Cluster points
-        traces.push({
-          x: points.x,
-          y: points.y,
-          mode: "markers",
-          name: `Cluster ${clusterId + 1}`,
-          marker: {
-            color: clusterColors[clusterId % clusterColors.length],
-            size: 12,
-          },
-        });
+        noisePoints.x.push(point[0]);
+        noisePoints.y.push(point[1]);
+        noisePoints.text.push("Noise");
       }
     });
+
+    const traces = [
+      {
+        // Noise trace
+        x: noisePoints.x,
+        y: noisePoints.y,
+        text: noisePoints.text,
+        name: "Noise",
+        mode: "markers",
+        marker: { color: "rgba(204, 204, 204, 0.8)", size: 8 },
+        hovertemplate: "<b>%{text}</b><extra></extra>",
+      },
+      {
+        // Border trace
+        x: borderPoints.x,
+        y: borderPoints.y,
+        text: borderPoints.text,
+        name: "Border",
+        mode: "markers",
+        marker: {
+          color: borderPoints.colors,
+          size: 10,
+          line: { color: borderPoints.borderColors, width: 2 },
+        },
+        hovertemplate: "<b>%{text}</b><extra></extra>",
+      },
+      {
+        // Core trace
+        x: corePoints.x,
+        y: corePoints.y,
+        text: corePoints.text,
+        name: "Core",
+        mode: "markers",
+        marker: { color: corePoints.colors, size: 14 },
+        hovertemplate: "<b>%{text}</b><extra></extra>",
+      },
+    ];
 
     const layout = {
       showlegend: true,
@@ -797,32 +841,24 @@ function createLiveDemoChart() {
         title: "X",
         color: "white",
         gridcolor: "rgba(255,255,255,0.1)",
-        range: [-1, 10],
+        range: [0, 10],
       },
       yaxis: {
         title: "Y",
         color: "white",
         gridcolor: "rgba(255,255,255,0.1)",
-        range: [-1, 10],
+        range: [0, 10],
       },
-      legend: { font: { color: "white" } },
+      legend: { font: { color: "white" }, traceorder: "reversed" },
       transition: { duration: 300, easing: "cubic-in-out" },
     };
 
-    console.log("Creating plot with traces:", traces);
-    try {
-      Plotly.react("dbscan-demo-chart", traces, layout, { responsive: true });
-      console.log("Plot created successfully");
-    } catch (error) {
-      console.error("Error creating plot:", error);
-    }
+    Plotly.react("dbscan-demo-chart", traces, layout, { responsive: true });
   }
 
   epsilonSlider.addEventListener("input", updateChart);
   minSamplesSlider.addEventListener("input", updateChart);
-
-  // Initial chart draw
-  updateChart();
+  updateChart(); // Initial draw
 }
 
 // --- END: CUSTOM CODE ---
